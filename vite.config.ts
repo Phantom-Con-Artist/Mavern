@@ -11,4 +11,13 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },
+  build: {
+    rollupOptions: {
+      // One HTML file per page. Add new pages here.
+      input: {
+        home: path.resolve(__dirname, "index.html"),
+        software: path.resolve(__dirname, "software/index.html"),
+      },
+    },
+  },
 });

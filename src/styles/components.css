@@ -1,0 +1,302 @@
+/*
+  Shared pieces: cut ink panels, buttons, tags, the speech bubble, the wordmark caret
+  and the noir backdrop and hero scene. In the components layer so Tailwind utilities can override them.
+*/
+
+@layer components {
+  /*
+    Panels share the buttons' cut: a slanted four-sided ink outline over an offset slab in Mavern green.
+    Offsets are in pixels so tall panels lean as little as short ones. Every other section leans the other way.
+    Layers (inside an isolated stack): slab, ink outline, then the face that holds the content.
+  */
+  .panel {
+    --panel-shape: polygon(0 12px, 100% 0, calc(100% - 6px) 100%, 8px calc(100% - 7px));
+    --panel-face: polygon(3px 15px, calc(100% - 3px) 3px, calc(100% - 9px) calc(100% - 3px), 11px calc(100% - 10px));
+    position: relative;
+    isolation: isolate;
+  }
+
+  section:nth-of-type(even) .panel {
+    --panel-shape: polygon(7px 0, calc(100% - 4px) 10px, 100% 100%, 0 calc(100% - 6px));
+    --panel-face: polygon(10px 3px, calc(100% - 7px) 13px, calc(100% - 3px) calc(100% - 3px), 3px calc(100% - 9px));
+  }
+
+  .panel-slab,
+  .panel-ink {
+    position: absolute;
+    inset: 0;
+    clip-path: var(--panel-shape);
+    pointer-events: none;
+  }
+
+  .panel-slab {
+    z-index: -2;
+    background: var(--accent);
+    transform: translate(8px, 8px) rotate(-0.25deg);
+  }
+
+  .panel-ink {
+    z-index: -1;
+    background: var(--line);
+  }
+
+  .panel-face {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    background: var(--panel);
+    clip-path: var(--panel-face);
+  }
+
+  .bubble {
+    position: relative;
+    display: inline-block;
+    padding: 0.9rem 1.4rem;
+    color: var(--bubble-ink);
+    text-align: center;
+    background: var(--bubble);
+    border: 2px solid var(--bubble-ink);
+    border-radius: 50% / 46%;
+  }
+
+  .bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -0.5rem;
+    left: 24%;
+    width: 0.85rem;
+    height: 0.85rem;
+    background: var(--bubble);
+    border-right: 2px solid var(--bubble-ink);
+    border-bottom: 2px solid var(--bubble-ink);
+    transform: rotate(45deg) skew(8deg, 8deg);
+  }
+
+  .bubble[data-tail="right"]::after {
+    left: auto;
+    right: 24%;
+  }
+
+  /* Ink drawings sit on the paper in light themes; in Ink they stay as a light sticker. */
+  .avatar {
+    background: var(--bubble);
+  }
+
+  /* The mark beside the "mavern" wordmark: as tall as its lowercase letters (x-height 0.556em, plus overshoot for the points), on the baseline. */
+  .wordmark-mark {
+    height: 0.58em;
+    width: auto;
+  }
+
+  /*
+    Buttons: the jagged box from the Volpi site (a slanted face, an ink outline and an offset slab),
+    in Mavern's green instead of Volpi's seal red. Only clip-path and transforms.
+  */
+  .btn {
+    --btn-slab: var(--accent);
+    --btn-face: var(--panel);
+    --btn-text: var(--ink);
+    --btn-shape: polygon(0 7%, 100% 0, 97% 100%, 2% 91%);
+    --btn-inner: polygon(3px calc(7% + 3px), calc(100% - 3px) 3px, calc(97% - 3px) calc(100% - 3px), calc(2% + 3px) calc(91% - 3px));
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    color: var(--btn-text);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s ease;
+  }
+
+  .btn:nth-of-type(even) {
+    --btn-shape: polygon(2% 0, 98% 8%, 100% 94%, 0 100%);
+    --btn-inner: polygon(calc(2% + 3px) 3px, calc(98% - 3px) calc(8% + 3px), calc(100% - 3px) calc(94% - 3px), 3px calc(100% - 3px));
+  }
+
+  .btn::before,
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    clip-path: var(--btn-shape);
+  }
+
+  .btn::before {
+    background: var(--btn-slab);
+    transform: translate(6px, 6px) rotate(-1.2deg);
+    transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  .btn::after {
+    background: var(--line);
+  }
+
+  .btn-in {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 1em 1.7em 1.05em;
+    background: var(--btn-face);
+    clip-path: var(--btn-inner);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .btn:hover::before { transform: translate(9px, 8px) rotate(-3deg); }
+  .btn:hover .btn-in { background: var(--ink); color: var(--paper); }
+  .btn:active { transform: translate(2px, 2px) skewX(-4deg); }
+  .btn:focus-visible { outline: none; }
+  .btn:focus-visible::before { background: var(--ink-soft); transform: translate(8px, 8px) rotate(-2deg); }
+
+  .btn-primary { --btn-face: var(--accent); --btn-text: var(--accent-contrast); --btn-slab: var(--line); }
+  .btn-primary:hover::before { background: var(--accent); }
+
+  /* Plain text action beside a button. */
+  .textlink {
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: var(--accent);
+  }
+
+  .textlink:hover { color: var(--accent); }
+
+  /* A sheared ink label for section numbers, cut like the buttons. */
+  .tag {
+    display: inline-block;
+    padding: 0.45em 1em 0.4em 0.85em;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--paper);
+    background: var(--ink);
+    clip-path: polygon(0 0, 100% 0, 94% 100%, 4% 100%);
+    transform: rotate(-2deg);
+  }
+
+  /*
+    The hero art panel, cut on a slant like a manga gutter: an ink layer clipped to the shape,
+    with the art layer clipped 3px inside it along the cut edge. Top edge on phones, left edge from md.
+  */
+  .slant {
+    --cut: polygon(0 14%, 100% 0, 100% 100%, 0 100%);
+    --cut-in: polygon(0 calc(14% + 3px), 100% 3px, 100% 100%, 0 100%);
+    position: relative;
+    background: var(--line);
+    clip-path: var(--cut);
+  }
+
+  .slant > .slant-in {
+    position: absolute;
+    inset: 0;
+    background: var(--panel);
+    clip-path: var(--cut-in);
+  }
+
+  @media (min-width: 768px) {
+    .slant {
+      --cut: polygon(18% 0, 100% 0, 100% 100%, 0 100%);
+      --cut-in: polygon(calc(18% + 3px) 0, 100% 0, 100% 100%, 3px 100%);
+    }
+  }
+
+  /* Caret for the typing wordmark (components/brand/TypingWord.tsx). */
+  .typing-caret {
+    display: inline-block;
+    width: 0.09em;
+    height: 0.62em;
+    margin-left: 0.06em;
+    background: var(--accent);
+    animation: caret-blink 1s steps(1) infinite;
+  }
+
+  @keyframes caret-blink {
+    50% { opacity: 0; }
+  }
+
+  /* A typed file card for plain facts: dashed rows on a lightly toned card. */
+  .dossier {
+    padding: 0.75rem 1.25rem;
+    background: color-mix(in srgb, var(--paper) 70%, var(--desk));
+    border: 2px solid var(--line);
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  .dossier > div + div {
+    border-top: 1px dashed var(--line);
+  }
+
+  /* Noir backdrop (components/art/NoirBackdrop.tsx) */
+
+  .noir-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  /* Soft-edged blind shadows, strongest near the window at the upper right. */
+  .noir-blinds {
+    position: absolute;
+    inset: -20%;
+    background: repeating-linear-gradient(
+      -32deg,
+      transparent 0 44px,
+      var(--blind) 58px 98px,
+      transparent 112px 150px
+    );
+    mask-image: radial-gradient(ellipse 75% 85% at 88% 0%, #000 15%, transparent 78%);
+  }
+
+  .noir-grain {
+    position: absolute;
+    inset: 0;
+    opacity: var(--grain);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .noir-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 40%, transparent 55%, var(--vignette) 100%);
+  }
+
+  /*
+    Hero scene (components/art/NoirScene.tsx): hard blind shadows drifting across the panel,
+    fading away from the light, and rain falling in front. One stripe period is 80px along the
+    gradient, which is 80 / sin(32deg) = 150.97px sideways, so the drift loops seamlessly.
+  */
+  .noir-scene-blinds {
+    position: absolute;
+    inset: -30%;
+    background: repeating-linear-gradient(
+      -32deg,
+      transparent 0 20px,
+      var(--scene-blind) 24px 52px,
+      transparent 56px 80px
+    );
+    mask-image: linear-gradient(to bottom left, #000 25%, transparent 95%);
+    animation: blinds-drift 16s linear infinite;
+  }
+
+  @keyframes blinds-drift {
+    to { transform: translateX(150.97px); }
+  }
+
+  .noir-rain {
+    position: absolute;
+    inset-inline: 0;
+    top: -100%;
+    height: 200%;
+    opacity: 0.28;
+    animation: rain-fall 1.4s linear infinite;
+  }
+
+  @keyframes rain-fall {
+    to { transform: translateY(50%); }
+  }
+}
