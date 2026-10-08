@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1d2b3a" />
+  <title>Mavern — Valley specimen 04</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    @font-face { font-family: "DM Sans"; src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "DM Sans"; src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+    :root {
+      --night: #1d2b3a;
+      --cream: #f6f0e1;
+      --cream-soft: rgba(246, 240, 225, .82);
+      --gold: #f2d99a;
+      --petal: #f4c4cf;
+      --ink: #26323a;
+      --serif: "Cormorant Garamond", "Iowan Old Style", Palatino, Georgia, serif;
+      --sans: "DM Sans", system-ui, sans-serif;
+      /* Painting is 1672 x 941. Stage "covers" the viewport and keeps the tree in frame on narrow screens. */
+      --ratio: 1.7768;
+      --w: max(100vw, calc(100svh * var(--ratio)));
+      --h: calc(var(--w) / var(--ratio));
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body { margin: 0; background: var(--night); color: var(--cream); font: 400 16px/1.6 var(--sans); overflow-x: hidden; }
+    a { color: inherit; text-decoration: none; }
+
+    .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; }
+
+    /* ---- painted stage (everything inside is positioned in % of the painting) ---- */
+    .stage {
+      position: absolute;
+      width: var(--w);
+      height: var(--h);
+      left: calc((100vw - var(--w)) * .68);
+      top: calc((100svh - var(--h)) * .5);
+      transform: translate3d(var(--px, 0), var(--py, 0), 0) scale(1.04);
+      transition: transform 1.4s cubic-bezier(.2, .6, .2, 1);
+      will-change: transform;
+    }
+    .stage > * { position: absolute; }
+    .painting { inset: 0; width: 100%; height: 100%; display: block; animation: breathe 38s ease-in-out infinite alternate; transform-origin: 60% 55%; }
+    @keyframes breathe { from { transform: scale(1); } to { transform: scale(1.035) translate(-.4%, .2%); } }
+
+    /* light that enters through the clouds */
+    .rays {
+      left: 14%; top: -18%; width: 60%; height: 100%;
+      background: conic-gradient(from 148deg at 34% 18%, transparent 0 8deg, rgba(255, 238, 190, .30) 14deg, transparent 22deg, rgba(255, 238, 190, .22) 30deg, transparent 40deg, rgba(255, 238, 190, .26) 48deg, transparent 58deg);
+      mix-blend-mode: screen; filter: blur(10px);
+      animation: rays 14s ease-in-out infinite alternate;
+    }
+    @keyframes rays { from { opacity: .35; transform: rotate(-1.5deg); } to { opacity: .9; transform: rotate(1.5deg); } }
+
+    .glow { left: 20%; top: -6%; width: 30%; height: 40%; background: radial-gradient(closest-side, rgba(255, 244, 205, .55), transparent); mix-blend-mode: screen; animation: glow 9s ease-in-out infinite alternate; }
+    @keyframes glow { from { opacity: .5; transform: scale(.95); } to { opacity: 1; transform: scale(1.08); } }
+
+    /* mist rolling through the valley */
+    .mist { border-radius: 50%; background: radial-gradient(closest-side, rgba(226, 238, 242, .55), rgba(226, 238, 242, 0)); filter: blur(14px); mix-blend-mode: screen; }
+    .mist.a { left: -10%; top: 44%; width: 55%; height: 22%; animation: drift 52s linear infinite alternate; }
+    .mist.b { left: 28%; top: 52%; width: 50%; height: 18%; opacity: .8; animation: drift 68s linear infinite alternate-reverse; }
+    .mist.c { left: 0%; top: 22%; width: 45%; height: 16%; opacity: .55; animation: drift 80s linear infinite alternate; }
+    @keyframes drift { from { transform: translateX(-7%); } to { transform: translateX(9%); } }
+
+    /* warm bloom on the valley floor */
+    .bloom { left: 38%; top: 54%; width: 24%; height: 20%; background: radial-gradient(closest-side, rgba(255, 235, 170, .32), transparent); mix-blend-mode: screen; animation: glow 11s ease-in-out infinite alternate-reverse; }
+
+    /* lone traveller on the path (back view, kept simple on purpose) */
+    .traveller { left: 72.4%; top: 67.2%; width: 1.5%; transform-origin: 50% 100%; filter: drop-shadow(0 0 2px rgba(20, 30, 20, .35)); }
+    .traveller svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .cloak-hem { transform-origin: 50% 0; animation: hem 7s steps(14) infinite alternate; }
+    .hair { transform-origin: 50% 0; animation: hem 9s steps(18) infinite alternate-reverse; }
+    @keyframes hem { from { transform: skewX(-3deg); } to { transform: skewX(4deg); } }
+
+    /* ---- atmosphere above the painting ---- */
+    #sky { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+
+    .vignette { position: absolute; inset: 0; z-index: 3; pointer-events: none; background:
+      radial-gradient(120% 90% at 62% 40%, transparent 45%, rgba(18, 28, 40, .55) 100%),
+      linear-gradient(180deg, rgba(18, 28, 40, .45), transparent 22%, transparent 55%, rgba(18, 28, 40, .72)); }
+
+    .paper { position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: .22; mix-blend-mode: soft-light; }
+
+    /* ---- content ---- */
+    header.top { position: absolute; z-index: 6; inset: 0 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 22px 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font: 500 17px/1 var(--sans); letter-spacing: -.02em; }
+    .seal { width: 40px; height: 40px; border-radius: 50%; background: var(--cream); display: grid; place-items: center; box-shadow: 0 0 0 2px rgba(246, 240, 225, .25), 0 6px 24px rgba(10, 18, 28, .4); filter: url(#wobble); }
+    .seal img { width: 30px; height: 30px; object-fit: contain; }
+    nav.links { display: flex; gap: 22px; font-size: 14px; color: var(--cream-soft); }
+    nav.links a { padding: 8px 2px; border-bottom: 1px solid transparent; transition: border-color .4s; }
+    nav.links a:hover, nav.links a:focus-visible { border-color: var(--gold); outline: none; }
+
+    .copy { position: absolute; z-index: 6; left: 0; right: 0; bottom: 0; padding: 0 20px max(44px, 7svh); max-width: 720px; }
+    .kicker { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold); margin: 0 0 14px; }
+    h1 { font: 400 clamp(4.2rem, 17vw, 9.5rem)/.88 var(--serif); letter-spacing: -.02em; margin: 0; text-shadow: 0 2px 40px rgba(12, 20, 32, .55); filter: url(#wobble); }
+    h1 em { font-style: italic; color: var(--gold); }
+    .lede { font: 400 clamp(1.15rem, 3.6vw, 1.5rem)/1.45 var(--serif); max-width: 30ch; margin: 22px 0 0; color: var(--cream); text-shadow: 0 1px 18px rgba(12, 20, 32, .7); }
+    .lede-sub { margin: 10px 0 0; max-width: 40ch; font-size: 14px; color: var(--cream-soft); text-shadow: 0 1px 14px rgba(12, 20, 32, .8); }
+
+    .cta { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-top: 30px; padding: 15px 28px; font-weight: 500; font-size: 15px; color: var(--ink); background: var(--cream); border-radius: 999px; transition: transform .5s ease, box-shadow .5s ease; box-shadow: 0 10px 40px -10px rgba(255, 230, 170, .5); filter: url(#wobble); }
+    .cta:hover, .cta:focus-visible { transform: translateY(-3px); box-shadow: 0 16px 50px -8px rgba(255, 230, 170, .7); outline: none; }
+    .cta:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+
+    .scroll { position: absolute; z-index: 6; right: 20px; bottom: max(44px, 7svh); writing-mode: vertical-rl; font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--cream-soft); display: none; }
+    .scroll::after { content: ""; display: inline-block; width: 1px; height: 54px; margin-top: 14px; background: linear-gradient(var(--gold), transparent); animation: fall 3.6s ease-in-out infinite; transform-origin: top; }
+    @keyframes fall { 0%, 100% { transform: scaleY(.3); opacity: .4; } 50% { transform: scaleY(1); opacity: 1; } }
+
+    /* slow entrance */
+    .fade { opacity: 0; transform: translateY(14px); animation: arrive 2.4s cubic-bezier(.2, .6, .2, 1) forwards; }
+    .fade.d1 { animation-delay: .5s; } .fade.d2 { animation-delay: 1.1s; } .fade.d3 { animation-delay: 1.7s; } .fade.d4 { animation-delay: 2.2s; }
+    @keyframes arrive { to { opacity: 1; transform: none; } }
+    .veil { position: absolute; inset: 0; z-index: 8; background: var(--night); pointer-events: none; animation: lift 3.2s ease-out .1s forwards; }
+    @keyframes lift { to { opacity: 0; visibility: hidden; } }
+
+    @media (max-width: 759px) {
+      .vignette { background: linear-gradient(180deg, rgba(18, 28, 40, .5), transparent 20%, rgba(18, 28, 40, .35) 45%, rgba(18, 28, 40, .88) 100%); }
+    }
+
+    @media (min-width: 760px) {
+      header.top { padding: 30px 48px; }
+      .copy { padding-left: 48px; padding-bottom: 9svh; }
+      .scroll { display: block; right: 48px; }
+    }
+
+    /* motion off: still painting, everything readable */
+    @media (prefers-reduced-motion: reduce) {
+      .painting, .rays, .glow, .mist, .bloom, .cloak-hem, .hair, .scroll::after { animation: none; }
+      .fade { animation: none; opacity: 1; transform: none; }
+      .veil { display: none; }
+      .stage { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- ink line that never sits perfectly still: seed is stepped from JS at ~8fps -->
+      <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence id="wobble-noise" type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="3" result="n" />
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+      <filter id="grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="8" />
+        <feColorMatrix values="0 0 0 0 .5  0 0 0 0 .5  0 0 0 0 .5  0 0 0 .9 0" />
+      </filter>
+    </defs>
+  </svg>
+
+  <main class="hero" id="hero">
+    <div class="veil" aria-hidden="true"></div>
+
+    <div class="stage" id="stage" aria-hidden="true">
+      <img class="painting" src="./assets/mavern-sakura-valley-v1.webp" alt="" width="1672" height="941" fetchpriority="high" />
+      <div class="rays"></div>
+      <div class="glow"></div>
+      <div class="mist c"></div>
+      <div class="mist a"></div>
+      <div class="mist b"></div>
+      <div class="bloom"></div>
+      <div class="traveller">
+        <svg viewBox="0 0 40 90" xmlns="http://www.w3.org/2000/svg">
+          <!-- staff -->
+          <path d="M31 12 L33 88" stroke="#3a2b22" stroke-width="1.6" stroke-linecap="round" fill="none" />
+          <circle cx="31" cy="10" r="2.4" fill="#f2d99a" />
+          <!-- long pale hair -->
+          <g class="hair"><path d="M14 18 C8 34 9 52 13 62 L20 52 L26 62 C28 46 27 30 23 18 Z" fill="#e9e4d6" /></g>
+          <!-- head -->
+          <circle cx="20" cy="14" r="7" fill="#e9e4d6" />
+          <!-- cloak -->
+          <path d="M12 24 C15 20 25 20 28 24 L32 60 L36 84 L4 84 L8 60 Z" fill="#5a6f7c" />
+          <path d="M12 24 C15 20 25 20 28 24 L26 40 L14 40 Z" fill="#e9e4d6" opacity=".9" />
+          <g class="cloak-hem"><path d="M6 78 L34 78 L36 88 L4 88 Z" fill="#465a67" /></g>
+          <path d="M20 24 L20 80" stroke="#34454f" stroke-width="1" opacity=".5" />
+        </svg>
+      </div>
+    </div>
+
+    <canvas id="sky" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+    <svg class="paper" aria-hidden="true" width="100%" height="100%"><rect width="100%" height="100%" filter="url(#grain)" /></svg>
+
+    <header class="top">
+      <a class="brand fade d1" href="#" aria-label="Mavern home">
+        <span class="seal"><img src="../../assets/mavern-logo.png" alt="" /></span>
+        <span>mavern</span>
+      </a>
+      <nav class="links fade d1" aria-label="Main navigation">
+        <a href="#about">About</a>
+        <a href="mailto:hello@mavern.in">Contact</a>
+      </nav>
+    </header>
+
+    <div class="copy">
+      <p class="kicker fade d1">An independent creative practice</p>
+      <h1 class="fade d2">Mav<em>ern</em></h1>
+      <p class="lede fade d3">Development, art, music, writing, and experiments. Creativity is the objective.</p>
+      <p class="lede-sub fade d3">The work is still being gathered here. Check back, or say hello.</p>
+      <a class="cta fade d4" href="mailto:hello@mavern.in">Get in touch</a>
+    </div>
+    <div class="scroll fade d4" aria-hidden="true">Scroll</div>
+  </main>
+
+  <script>
+    (() => {
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* hand-drawn shimmer: step the displacement seed ~8 times a second */
+      const noise = document.getElementById("wobble-noise");
+      if (!reduce) {
+        let seed = 3;
+        setInterval(() => noise.setAttribute("seed", (seed = (seed % 40) + 1)), 125);
+      }
+
+      /* slow pointer parallax on the painted stage */
+      const stage = document.getElementById("stage");
+      if (!reduce && matchMedia("(pointer: fine)").matches) {
+        addEventListener("pointermove", (e) => {
+          const x = (e.clientX / innerWidth - .5) * -18;
+          const y = (e.clientY / innerHeight - .5) * -10;
+          stage.style.setProperty("--px", x + "px");
+          stage.style.setProperty("--py", y + "px");
+        }, { passive: true });
+      }
+
+      /* petals and light motes */
+      const canvas = document.getElementById("sky");
+      const ctx = canvas.getContext("2d");
+      let W = 0, H = 0, dpr = 1;
+      const resize = () => {
+        dpr = Math.min(devicePixelRatio || 1, 2);
+        W = canvas.clientWidth; H = canvas.clientHeight;
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      resize(); addEventListener("resize", resize);
+
+      const rand = (a, b) => a + Math.random() * (b - a);
+      const petalCount = () => Math.round(Math.min(46, Math.max(16, W / 34)));
+      const moteCount = () => Math.round(Math.min(70, Math.max(24, W / 22)));
+
+      const makePetal = (anywhere) => ({
+        x: anywhere ? rand(0, W) : rand(W * .3, W * 1.2),
+        y: anywhere ? rand(-20, H) : rand(-60, -10),
+        s: rand(4, 11), vy: rand(14, 34), vx: rand(-26, -8),
+        rot: rand(0, 6.28), vr: rand(-1.1, 1.1), ph: rand(0, 6.28), sw: rand(.6, 1.4), a: rand(.5, .95),
+      });
+      const makeMote = () => ({ x: rand(0, W), y: rand(H * .1, H), r: rand(.8, 2.4), vy: rand(-9, -2), vx: rand(-4, 5), ph: rand(0, 6.28), tw: rand(.4, 1.1) });
+
+      let petals = Array.from({ length: petalCount() }, () => makePetal(true));
+      let motes = Array.from({ length: moteCount() }, makeMote);
+
+      const drawPetal = (p) => {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.scale(1, .55 + .45 * Math.abs(Math.sin(p.rot * .7 + p.ph)));
+        ctx.globalAlpha = p.a;
+        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, p.s);
+        g.addColorStop(0, "#fbe3e8"); g.addColorStop(1, "#f0a9bb");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.moveTo(0, -p.s);
+        ctx.bezierCurveTo(p.s, -p.s * .6, p.s * .8, p.s * .8, 0, p.s);
+        ctx.bezierCurveTo(-p.s * .8, p.s * .8, -p.s, -p.s * .6, 0, -p.s);
+        ctx.fill();
+        ctx.restore();
+      };
+      const drawMote = (m, t) => {
+        const a = .25 + .75 * (.5 + .5 * Math.sin(t * m.tw + m.ph));
+        const g = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r * 5);
+        g.addColorStop(0, `rgba(255,240,190,${a})`); g.addColorStop(.25, `rgba(255,228,150,${a * .5})`); g.addColorStop(1, "rgba(255,228,150,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(m.x, m.y, m.r * 5, 0, 6.28); ctx.fill();
+      };
+
+      let last = performance.now(), t = 0;
+      const frame = (now) => {
+        const dt = Math.min((now - last) / 1000, .05); last = now; t += dt;
+        ctx.clearRect(0, 0, W, H);
+        for (const m of motes) {
+          m.x += (m.vx + Math.sin(t * .4 + m.ph) * 5) * dt; m.y += m.vy * dt;
+          if (m.y < -10 || m.x < -10 || m.x > W + 10) Object.assign(m, makeMote(), { y: H + 10 });
+          drawMote(m, t);
+        }
+        for (let i = 0; i < petals.length; i++) {
+          const p = petals[i];
+          p.x += (p.vx + Math.sin(t * p.sw + p.ph) * 22) * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+          if (p.y > H + 20 || p.x < -30) petals[i] = makePetal(false);
+          drawPetal(p);
+        }
+        if (!reduce) requestAnimationFrame(frame);
+      };
+      if (reduce) { frame(performance.now()); } else { requestAnimationFrame(frame); }
+      addEventListener("resize", () => { petals = Array.from({ length: petalCount() }, () => makePetal(true)); motes = Array.from({ length: moteCount() }, makeMote); });
+    })();
+  </script>
+</body>
+</html>

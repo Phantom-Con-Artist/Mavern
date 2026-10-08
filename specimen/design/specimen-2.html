@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#efe8d5" />
+  <title>Mavern — The curious little world</title>
+  <style>
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2") format("woff2");
+      font-style: normal; font-weight: 400; font-display: swap;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2") format("woff2");
+      font-style: normal; font-weight: 500; font-display: swap;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-600-normal.woff2") format("woff2");
+      font-style: normal; font-weight: 600; font-display: swap;
+    }
+
+    :root {
+      --parchment: #efe8d5;
+      --paper: #faf5e9;
+      --paper-dark: #e5dac0;
+      --ink: #302d25;
+      --muted: #756d5b;
+      --forest: #243e32;
+      --forest-light: #49624a;
+      --moss: #7d8a5b;
+      --moss-pale: #d5d7b8;
+      --berry: #914b47;
+      --brass: #c2944e;
+      --lavender: #a99ab5;
+      --line: rgba(48,45,37,.24);
+      --serif: "Iowan Old Style", "Baskerville", "Palatino Linotype", Georgia, serif;
+      --sans: "DM Sans", "Avenir Next", Avenir, sans-serif;
+      --width: 1280px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--parchment); color: var(--ink); font: 400 15px/1.7 var(--sans); }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: var(--moss-pale); color: var(--forest); }
+    .wrap { width: min(var(--width), calc(100% - 72px)); margin-inline: auto; }
+    .serif { font-family: var(--serif); }
+    .small-cap { font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+
+    .topline { background: var(--forest); color: #ebe4d1; font-size: 9px; letter-spacing: .14em; text-align: center; text-transform: uppercase; padding: 8px 16px; }
+    .masthead { position: relative; z-index: 2; background: var(--parchment); }
+    .nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; min-height: 87px; border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; align-items: center; gap: 10px; width: fit-content; font: 600 18px/1 var(--serif); letter-spacing: -.025em; }
+    .brand img { width: 34px; height: 34px; object-fit: contain; }
+    .brand span { padding-top: 2px; }
+    .nav-links { display: flex; align-items: center; gap: clamp(21px, 3.3vw, 44px); font-size: 11px; color: #655f50; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--berry); }
+    .nav-right { justify-self: end; }
+    .nav-mail { display: inline-flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid var(--forest); color: var(--forest); font-size: 10px; }
+    .nav-mail:hover { background: var(--forest); color: var(--paper); }
+    .nav-mail i { font-size: 14px; font-style: normal; }
+
+    .hero { position: relative; overflow: hidden; min-height: 680px; display: flex; align-items: center; background: var(--paper); }
+    .hero::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .24; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E"); mix-blend-mode: multiply; }
+    .hero::after { content: ""; position: absolute; pointer-events: none; width: 470px; height: 470px; left: -345px; top: 90px; border: 1px solid rgba(145,75,71,.22); border-radius: 50%; box-shadow: 0 0 0 22px rgba(145,75,71,.035), 0 0 0 46px rgba(145,75,71,.03); }
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: .95fr 1.05fr; gap: 20px; align-items: center; padding-block: 47px 55px; }
+    .hero-copy { position: relative; z-index: 2; padding: 30px 0 38px; }
+    .hero-kicker { display: flex; align-items: center; gap: 12px; color: var(--berry); }
+    .hero-kicker::before, .hero-kicker::after { content: "✳"; color: var(--brass); font-size: 12px; }
+    h1 { max-width: 610px; margin: 25px 0 22px; font: 400 clamp(61px, 7.4vw, 104px)/.91 var(--serif); letter-spacing: -.055em; }
+    h1 em { color: var(--berry); font-weight: 400; }
+    .hero-lede { max-width: 405px; margin: 0; color: #665f51; font-size: 14px; line-height: 1.9; }
+    .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 19px; margin-top: 31px; }
+    .primary { display: inline-flex; align-items: center; gap: 13px; padding: 13px 17px; border: 1px solid var(--forest); color: var(--paper); background: var(--forest); font-size: 11px; transition: background .2s ease, transform .2s ease; }
+    .primary:hover { background: var(--berry); border-color: var(--berry); transform: translateY(-2px); }
+    .primary b { color: #d8ba7a; font-size: 16px; font-weight: 400; }
+    .secondary { color: var(--forest); border-bottom: 1px solid rgba(36,62,50,.4); padding: 7px 0; font-size: 11px; }
+    .secondary:hover { color: var(--berry); border-color: var(--berry); }
+    .hero-small { display: flex; align-items: center; gap: 11px; margin-top: 43px; color: #857b65; font: italic 13px/1.4 var(--serif); }
+    .hero-small::before { content: ""; width: 30px; height: 1px; background: var(--brass); }
+
+    .storybook { position: relative; justify-self: end; width: min(55vw, 690px); aspect-ratio: 1.06; border: 1px solid rgba(48,45,37,.25); padding: 12px; background: #e6ddc7; transform: rotate(1.1deg); box-shadow: 8px 9px 0 rgba(36,62,50,.13); }
+    .storybook::before { content: ""; position: absolute; z-index: -1; inset: -9px 9px 9px -9px; border: 1px solid rgba(145,75,71,.47); }
+    .storybook-art { position: relative; width: 100%; height: 100%; overflow: hidden; background: #182d38; }
+    .storybook-art svg { width: 100%; height: 100%; display: block; }
+    .caption { position: absolute; left: 30px; bottom: 27px; z-index: 1; color: #f3ead3; text-shadow: 0 1px 8px rgba(17,28,32,.6); }
+    .caption .small-cap { font-size: 8px; color: #d4c38f; }
+    .caption p { max-width: 240px; margin: 7px 0 0; font: italic 18px/1.25 var(--serif); }
+    .seal { position: absolute; z-index: 2; right: 28px; top: 28px; display: grid; place-items: center; width: 68px; height: 68px; border: 1px solid rgba(234,210,155,.88); border-radius: 50%; color: #f2dfae; font: 400 21px/1 var(--serif); transform: rotate(10deg); }
+    .seal::before { content: ""; position: absolute; inset: 5px; border: 1px solid rgba(234,210,155,.5); border-radius: 50%; }
+    .hero-foot { position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid var(--line); }
+    .hero-foot .wrap { min-height: 44px; display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .hero-foot span { color: var(--muted); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; }
+
+    .manifesto { position: relative; overflow: hidden; padding: 103px 0 110px; color: var(--paper); background: var(--forest); }
+    .manifesto::before { content: ""; position: absolute; right: 4%; top: 50%; width: 250px; height: 250px; transform: translateY(-50%); border: 1px solid rgba(239,232,213,.13); border-radius: 50%; box-shadow: 0 0 0 17px rgba(239,232,213,.035), 0 0 0 38px rgba(239,232,213,.025); }
+    .manifesto .wrap { position: relative; display: grid; grid-template-columns: .5fr 1.5fr; gap: 8vw; align-items: start; }
+    .manifesto .small-cap { color: #d3bb82; padding-top: 12px; }
+    .manifesto h2 { max-width: 830px; margin: 0; font: 400 clamp(43px, 6vw, 78px)/1.04 var(--serif); letter-spacing: -.05em; }
+    .manifesto h2 em { color: #d2d9b6; }
+    .manifesto p { grid-column: 2; max-width: 430px; margin: -17px 0 0; color: rgba(250,245,233,.72); font-size: 12px; line-height: 1.9; }
+
+    .shelf { padding: 111px 0 126px; background: var(--parchment); }
+    .shelf-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 45px; }
+    .shelf-head .small-cap { color: var(--berry); }
+    .shelf-head h2 { margin: 9px 0 0; font: 400 clamp(43px, 5.4vw, 70px)/1 var(--serif); letter-spacing: -.045em; }
+    .shelf-head p { max-width: 290px; margin: 0 0 4px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+    .shelf-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 19px; }
+    .shelf-card { position: relative; min-height: 388px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; padding: 21px; border: 1px solid rgba(48,45,37,.24); background: var(--paper); transition: transform .25s ease, box-shadow .25s ease; }
+    .shelf-card:hover { transform: translateY(-5px) rotate(-.4deg); box-shadow: 5px 7px 0 rgba(36,62,50,.11); }
+    .shelf-card:nth-child(2) { margin-top: 31px; background: #e4e3ce; }
+    .shelf-card:nth-child(3) { margin-top: 62px; background: #ead8c6; }
+    .card-illustration { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .shelf-card::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(250,245,233,.02) 30%, rgba(35,44,36,.73)); }
+    .card-label, .card-title { position: relative; z-index: 1; }
+    .card-label { display: flex; align-items: center; justify-content: space-between; color: #f9f2df; text-shadow: 0 1px 8px rgba(0,0,0,.3); }
+    .card-label .small-cap { font-size: 8px; letter-spacing: .14em; }
+    .card-label .card-no { font: 400 13px/1 var(--serif); }
+    .card-title { color: #fff8e9; }
+    .card-title h3 { max-width: 275px; margin: 0; font: 400 32px/1 var(--serif); letter-spacing: -.025em; }
+    .card-title p { margin: 10px 0 0; color: rgba(255,248,233,.77); font-size: 10px; }
+
+    .aside-note { padding: 63px 0 74px; background: var(--paper); }
+    .aside-note .wrap { display: grid; grid-template-columns: .65fr 1.35fr; gap: 8vw; align-items: start; }
+    .aside-note .small-cap { color: var(--berry); padding-top: 10px; }
+    .aside-note blockquote { max-width: 790px; margin: 0; font: 400 clamp(31px, 4vw, 48px)/1.15 var(--serif); letter-spacing: -.035em; }
+    .aside-note blockquote em { color: var(--forest-light); }
+
+    .bottom { position: relative; overflow: hidden; padding: 77px 0 72px; background: #dfd5bc; }
+    .bottom::after { content: "✦"; position: absolute; right: 8%; bottom: -78px; color: rgba(145,75,71,.09); font: 400 280px/1 var(--serif); transform: rotate(14deg); }
+    .bottom .wrap { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 35px; }
+    .bottom .small-cap { color: var(--berry); }
+    .bottom h2 { margin: 11px 0 0; font: 400 clamp(42px, 5.5vw, 70px)/1 var(--serif); letter-spacing: -.05em; }
+    .bottom a { display: inline-flex; align-items: center; gap: 14px; padding: 14px 17px; border: 1px solid var(--forest); color: var(--forest); font-size: 11px; white-space: nowrap; }
+    .bottom a:hover { background: var(--forest); color: var(--paper); }
+
+    footer { color: #eee6d3; background: var(--forest); }
+    .footer-main { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 83px; }
+    .footer-brand { font: 600 16px/1 var(--serif); }
+    .footer-meta { color: rgba(238,230,211,.65); font-size: 8px; letter-spacing: .14em; text-transform: uppercase; }
+    .firefly { animation: glow 3.5s ease-in-out infinite alternate; transform-origin: center; }
+    @keyframes glow { from { opacity: .38; } to { opacity: 1; } }
+
+    @media (max-width: 850px) {
+      .wrap { width: min(var(--width), calc(100% - 44px)); }
+      .nav { min-height: 75px; }
+      .nav { grid-template-columns: 1fr auto; }
+      .nav-links { grid-column: 1 / -1; grid-row: 2; justify-content: center; padding: 0 0 14px; }
+      .nav-right { grid-column: 2; grid-row: 1; }
+      .hero { min-height: 880px; align-items: flex-start; }
+      .hero-inner { grid-template-columns: 1fr; padding-block: 57px 72px; }
+      .hero-copy { padding: 20px 0 0; }
+      h1 { max-width: 630px; font-size: clamp(70px, 12vw, 100px); }
+      .storybook { width: min(84vw, 610px); justify-self: center; margin-top: 31px; margin-right: 0; }
+      .hero-small { margin-top: 28px; }
+      .manifesto .wrap { grid-template-columns: 1fr; gap: 25px; }
+      .manifesto p { grid-column: 1; margin: 0; }
+      .shelf { padding: 84px 0 90px; }
+      .shelf-grid { gap: 12px; }
+      .shelf-card { min-height: 340px; padding: 15px; }
+      .shelf-card:nth-child(2) { margin-top: 20px; }
+      .shelf-card:nth-child(3) { margin-top: 40px; }
+      .card-title h3 { font-size: 26px; }
+      .aside-note .wrap { grid-template-columns: 1fr; gap: 22px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: calc(100% - 36px); }
+      .topline { font-size: 8px; }
+      .brand { font-size: 16px; }
+      .brand img { width: 30px; height: 30px; }
+      .nav-mail { padding: 9px 10px; font-size: 9px; }
+      .nav-links { gap: 24px; font-size: 10px; }
+      .hero { min-height: unset; padding-bottom: 55px; }
+      .hero-inner { padding-block: 49px 60px; }
+      h1 { font-size: clamp(59px, 16vw, 82px); }
+      .hero-lede { max-width: 335px; font-size: 13px; }
+      .storybook { width: calc(100% - 9px); padding: 8px; margin-top: 24px; }
+      .seal { width: 54px; height: 54px; top: 20px; right: 20px; font-size: 17px; }
+      .caption { left: 21px; bottom: 20px; }
+      .caption p { max-width: 200px; font-size: 15px; }
+      .hero-foot .wrap { align-items: flex-start; flex-direction: column; justify-content: center; min-height: 49px; gap: 0; }
+      .hero-foot span { font-size: 7px; }
+      .hero-small { font-size: 12px; }
+      .manifesto { padding: 77px 0 82px; }
+      .manifesto h2 { font-size: 49px; }
+      .manifesto::before { right: -100px; top: auto; bottom: -70px; transform: none; }
+      .shelf-head { align-items: flex-start; flex-direction: column; margin-bottom: 28px; }
+      .shelf-head p { max-width: 340px; }
+      .shelf-grid { grid-template-columns: 1fr; gap: 12px; }
+      .shelf-card, .shelf-card:nth-child(2), .shelf-card:nth-child(3) { min-height: 360px; margin: 0; }
+      .aside-note { padding: 57px 0 65px; }
+      .aside-note blockquote { font-size: 35px; }
+      .bottom { padding: 66px 0; }
+      .bottom .wrap { align-items: flex-start; flex-direction: column; }
+      .bottom h2 { font-size: 53px; }
+      .footer-main { align-items: flex-start; flex-direction: column; justify-content: center; min-height: 80px; padding: 17px 0; gap: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topline">A home for things made with curiosity &nbsp;·&nbsp; Development · Art · Music · Writing</div>
+  <header class="masthead">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Mavern home"><img src="../../assets/mavern-logo.png" alt="" /><span>Mavern</span></a>
+      <div class="nav-links"><a href="#work">The collection</a><a href="#about">Our little world</a><a href="#formats">The many forms</a></div>
+      <div class="nav-right"><a class="nav-mail" href="mailto:hello@mavern.in">Come say hello <i aria-hidden="true">↗</i></a></div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-inner wrap">
+        <div class="hero-copy">
+          <div class="hero-kicker small-cap">An independent creative practice</div>
+          <h1>A little world for things made with <em>wonder.</em></h1>
+          <p class="hero-lede">Mavern is a home for software, games, music, art, and writing. A place for ideas to grow legs, find their form, and wander out into the world.</p>
+          <div class="hero-actions">
+            <a class="primary" href="#work">Wander through <b aria-hidden="true">↗</b></a>
+            <a class="secondary" href="#about">What is Mavern?</a>
+          </div>
+          <div class="hero-small">Creativity is the objective.</div>
+        </div>
+
+        <div class="storybook" role="img" aria-label="A tiny cottage tucked into a moonlit forest, with a winding path and fireflies">
+          <div class="storybook-art">
+            <svg viewBox="0 0 780 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs>
+                <linearGradient id="sky" x1="0" y1="0" x2=".3" y2="1"><stop stop-color="#182a3d"/><stop offset=".56" stop-color="#39455b"/><stop offset="1" stop-color="#68765f"/></linearGradient>
+                <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#556c50"/><stop offset="1" stop-color="#1e3b31"/></linearGradient>
+                <linearGradient id="path" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b78d61"/><stop offset="1" stop-color="#d0ae7a"/></linearGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="12"/></filter>
+                <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r=".55" fill="#f4deb1" opacity=".25"/></pattern>
+              </defs>
+              <rect width="780" height="700" fill="url(#sky)"/>
+              <circle cx="566" cy="148" r="57" fill="#e8d7a8" opacity=".12" filter="url(#glow)"/>
+              <circle cx="566" cy="148" r="42" fill="#ecddb6"/>
+              <circle cx="580" cy="135" r="38" fill="#39445a"/>
+              <g fill="#f2e4c5">
+                <path d="M102 96l3 9 9 3-9 3-3 9-3-9-9-3 9-3z"/><path d="M222 171l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M431 86l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/>
+                <path d="M664 240l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><circle cx="332" cy="135" r="2"/><circle cx="693" cy="103" r="2"/><circle cx="153" cy="224" r="1.8"/><circle cx="484" cy="209" r="1.6"/><circle cx="366" cy="204" r="1.4"/>
+              </g>
+              <g fill="none" stroke="#c4c7a2" stroke-opacity=".28">
+                <path d="M42 372c81-88 146-81 214-35s121 63 201 11 164-83 273-11"/><path d="M-2 412c96-100 171-91 250-38s133 65 219 5 174-84 317-1"/>
+              </g>
+              <path d="M0 416c119-62 197-67 303-32 104 35 193 6 268-44s137-71 209-31v391H0z" fill="#405b46"/>
+              <path d="M0 501c126-86 234-63 334-17 95 44 174 23 259-31 79-51 133-68 187-42v289H0z" fill="url(#hill)"/>
+              <path d="M352 700c38-83 85-137 102-199 20-70-15-105 13-160 18-37 73-56 108-86 18-15 26-30 32-53-36 12-81 8-120 33-48 29-67 71-62 118 5 44 28 77 11 123-23 61-75 100-114 224z" fill="url(#path)" opacity=".92"/>
+              <path d="M0 583c117-41 188-27 268-5s146 24 221-13" fill="none" stroke="#a9b28a" stroke-opacity=".45" stroke-width="2"/>
+              <g transform="translate(322 284)">
+                <ellipse cx="117" cy="278" rx="164" ry="26" fill="#172e29" opacity=".48"/>
+                <path d="M20 154 117 59l103 95v120H20z" fill="#b86050" stroke="#2b332e" stroke-width="5" stroke-linejoin="round"/>
+                <path d="m-2 162 119-118 124 118-20 15L117 76 14 178z" fill="#60443a" stroke="#2b332e" stroke-width="5" stroke-linejoin="round"/>
+                <path d="M31 161h172" stroke="#e4c58d" stroke-width="5" opacity=".65"/>
+                <path d="M98 274v-84c0-26 15-40 35-40s34 14 34 40v84z" fill="#302e2a" stroke="#2b332e" stroke-width="4"/>
+                <path d="M107 224c0-22 10-35 26-35s25 13 25 35v50h-51z" fill="#e6bd72"/>
+                <path d="M47 196h33v35H47z" fill="#ecdba9" stroke="#2b332e" stroke-width="4"/><path d="M48 212h32M63 197v34" stroke="#74523d" stroke-width="3"/>
+                <path d="M167 196h32v35h-32z" fill="#ecdba9" stroke="#2b332e" stroke-width="4"/><path d="M168 212h30M183 197v34" stroke="#74523d" stroke-width="3"/>
+                <path d="M106 59V8h37v86" fill="#e5d6b6" stroke="#2b332e" stroke-width="5"/><path d="M102 8h44v13h-44z" fill="#914b47" stroke="#2b332e" stroke-width="4"/>
+                <path d="M150 111c10-21 26-29 40-30-6 20-18 31-40 30z" fill="#587451" stroke="#2b332e" stroke-width="2"/>
+                <path d="M50 154v-22c0-19 10-31 26-31 16 0 25 12 25 31v22" fill="#b4a084" stroke="#2b332e" stroke-width="4"/>
+                <path d="M44 154h63" stroke="#2b332e" stroke-width="5"/>
+                <path d="M48 152c-11-11-21-11-31-8 4 16 15 24 32 22M99 150c11-12 22-13 34-8-4 16-18 25-35 23" fill="#7b9160" stroke="#2b332e" stroke-width="2"/>
+              </g>
+              <g fill="#e9d88c">
+                <circle class="firefly" cx="253" cy="422" r="4"/><circle class="firefly" cx="560" cy="395" r="3"/><circle class="firefly" cx="294" cy="521" r="3.3"/><circle class="firefly" cx="645" cy="467" r="4"/><circle class="firefly" cx="237" cy="582" r="2.7"/><circle class="firefly" cx="553" cy="568" r="3"/>
+              </g>
+              <g fill="#f8e5a6" opacity=".22" filter="url(#glow)"><circle cx="253" cy="422" r="8"/><circle cx="560" cy="395" r="8"/><circle cx="645" cy="467" r="9"/></g>
+              <g fill="#223a2f">
+                <path d="M66 564 95 389l28 175zM31 590 60 430l30 160zM681 510l30-194 31 194zM626 536l23-152 27 152zM125 552l20-133 24 133z"/>
+                <path d="M73 458h44l-23-48zM43 485h39l-21-43zM692 379h46l-24-52zM635 431h41l-22-48z" fill="#304c3a"/>
+              </g>
+              <g>
+                <path d="M143 604c0-24 17-39 36-39 20 0 34 16 34 39z" fill="#9a594e"/><path d="M164 565c1-21 12-31 21-31s19 11 19 31" fill="#d79d86"/><path d="M156 604v14M198 602v16" stroke="#eee0bf" stroke-width="4" stroke-linecap="round"/>
+                <path d="M586 613c0-20 14-33 31-33 16 0 30 13 30 33z" fill="#8b6b92"/><path d="M605 580c1-18 9-27 18-27 8 0 17 10 17 27" fill="#bba7c3"/><path d="M598 613v11M636 613v11" stroke="#eee0bf" stroke-width="4" stroke-linecap="round"/>
+              </g>
+              <rect width="780" height="700" fill="url(#dots)" opacity=".5"/>
+            </svg>
+          </div>
+          <div class="seal" aria-hidden="true">M</div>
+          <div class="caption"><div class="small-cap">A door left open</div><p>There is always room for one more story.</p></div>
+        </div>
+      </div>
+      <div class="hero-foot"><div class="wrap"><span>Development · Art · Music · Writing</span><span>Come in, the kettle's on.</span></div></div>
+    </section>
+
+    <section class="manifesto" id="about">
+      <div class="wrap">
+        <div class="small-cap">A small credo</div>
+        <h2>Mavern is an independent creative practice. <em>Creativity is the objective.</em></h2>
+        <p>Some ideas become software. Some grow into games, songs, pictures, or words. They share a home here without having to become the same thing.</p>
+      </div>
+    </section>
+
+    <section class="shelf" id="work">
+      <div class="wrap">
+        <div class="shelf-head">
+          <div><div class="small-cap">The shelf of curiosities</div><h2>Many little worlds.</h2></div>
+          <p>A home for work in all its forms. Pick a path and see where it leads.</p>
+        </div>
+        <div class="shelf-grid">
+          <a class="shelf-card" href="#formats" aria-label="Explore software and development">
+            <svg class="card-illustration" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="400" height="500" fill="#335847"/>
+              <circle cx="301" cy="102" r="79" fill="#c79d59" opacity=".8"/>
+              <path d="M0 303c76-56 148-60 226-17s119 40 174 7v207H0z" fill="#203e34"/>
+              <path d="M0 353c82-56 167-39 231-4s113 50 169 9v142H0z" fill="#172f2a"/>
+              <g transform="translate(94 167) rotate(-7 98 94)">
+                <rect x="9" y="10" width="202" height="196" fill="#182b25" opacity=".35"/>
+                <rect width="202" height="196" fill="#f0e7d4" stroke="#483e31" stroke-width="3"/>
+                <path d="M0 29h202" stroke="#82765f" opacity=".5"/>
+                <circle cx="14" cy="14" r="3" fill="#914b47"/><circle cx="26" cy="14" r="3" fill="#c2944e"/>
+                <path d="M22 57h78M22 75h143M22 102h52M87 102h90M22 131h139M22 151h94" stroke="#476855" stroke-width="5" stroke-linecap="round"/>
+                <path d="m139 153 13 13 28-35" fill="none" stroke="#914b47" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              </g>
+              <g fill="#e6cc89"><circle cx="67" cy="108" r="3"/><circle cx="348" cy="229" r="3"/><circle cx="277" cy="382" r="4"/></g>
+            </svg>
+            <div class="card-label"><span class="small-cap">The maker's bench</span><span class="card-no">01</span></div>
+            <div class="card-title"><h3>Software &amp; tools</h3><p>Small systems, useful ideas, curious experiments.</p></div>
+          </a>
+          <a class="shelf-card" href="#formats" aria-label="Explore games and interactive stories">
+            <svg class="card-illustration" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="400" height="500" fill="#7f8c62"/>
+              <circle cx="295" cy="108" r="52" fill="#ead9a4"/>
+              <path d="M0 303c94-76 176-63 251-28s105 24 149-1v226H0z" fill="#445b43"/>
+              <path d="M0 373c116-70 194-28 263 8s94 30 137 1v118H0z" fill="#293f34"/>
+              <path d="M170 500c20-63 56-91 67-141 12-57-7-87 16-125 15-26 43-34 73-51-10 44-53 61-52 103 0 38 26 56 11 101-13 39-61 67-82 113z" fill="#d6b685"/>
+              <g transform="translate(130 190)">
+                <ellipse cx="72" cy="189" rx="62" ry="13" fill="#1f342c" opacity=".45"/>
+                <path d="M19 122 72 65l57 57v58H19z" fill="#a95549" stroke="#29362d" stroke-width="4"/>
+                <path d="m8 126 64-69 68 69-11 9-57-58-54 58z" fill="#57443a" stroke="#29362d" stroke-width="4"/>
+                <path d="M58 180v-45c0-18 10-28 22-28s22 10 22 28v45z" fill="#ecd9a9" stroke="#29362d" stroke-width="3"/>
+                <path d="M33 133h23v25H33zM98 133h23v25H98z" fill="#e7d4a1" stroke="#29362d" stroke-width="3"/>
+              </g>
+              <g fill="#f1dfa0"><circle cx="101" cy="312" r="3"/><circle cx="314" cy="331" r="4"/><circle cx="281" cy="405" r="2.8"/><circle cx="78" cy="397" r="3"/></g>
+            </svg>
+            <div class="card-label"><span class="small-cap">The far green country</span><span class="card-no">02</span></div>
+            <div class="card-title"><h3>Games &amp; play</h3><p>Worlds to explore and stories to take part in.</p></div>
+          </a>
+          <a class="shelf-card" href="#formats" aria-label="Explore music, art and writing">
+            <svg class="card-illustration" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="400" height="500" fill="#9b776c"/>
+              <circle cx="203" cy="209" r="128" fill="#d8c5a4" opacity=".93"/>
+              <circle cx="203" cy="209" r="103" fill="none" stroke="#79594b" stroke-width="2" opacity=".64"/>
+              <circle cx="203" cy="209" r="75" fill="none" stroke="#79594b" stroke-width="2" opacity=".5"/>
+              <circle cx="203" cy="209" r="46" fill="none" stroke="#79594b" stroke-width="2" opacity=".44"/>
+              <circle cx="203" cy="209" r="14" fill="#914b47"/>
+              <path d="M203 81v256M75 209h256M113 119l181 181M294 119 113 300" stroke="#79594b" stroke-opacity=".25"/>
+              <path d="M31 396c42-31 60-27 81-10 20 17 30-53 56-49s25 75 54 71 23-87 53-80 27 41 43 39 28-14 51-25" fill="none" stroke="#f0e1c4" stroke-width="3"/>
+              <path d="M31 408c42-31 60-27 81-10 20 17 30-53 56-49s25 75 54 71 23-87 53-80 27 41 43 39 28-14 51-25" fill="none" stroke="#f0e1c4" stroke-opacity=".42"/>
+            </svg>
+            <div class="card-label"><span class="small-cap">The listening room</span><span class="card-no">03</span></div>
+            <div class="card-title"><h3>Music, art &amp; words</h3><p>Things heard, seen, read, and left to wonder about.</p></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="aside-note" id="formats">
+      <div class="wrap">
+        <div class="small-cap">A note in the margin</div>
+        <blockquote>“The first step is not knowing where the path ends. It is <em>following it a little way.</em>”</blockquote>
+      </div>
+    </section>
+
+    <section class="bottom">
+      <div class="wrap">
+        <div><div class="small-cap">Pull up a chair</div><h2>There is room for wonder.</h2></div>
+        <a href="mailto:hello@mavern.in">Write to Mavern <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="footer-main wrap"><a class="footer-brand" href="#top">Mavern</a><span class="footer-meta">A home for many forms of making</span><span class="footer-meta">Creativity is the objective.</span></div></footer>
+</body>
+</html>

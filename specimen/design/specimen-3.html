@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#172831" />
+  <title>Mavern — Under the blossom</title>
+  <style>
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-400-normal.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-500-normal.woff2") format("woff2");
+      font-weight: 500; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "DM Sans";
+      src: url("../../node_modules/@fontsource/dm-sans/files/dm-sans-latin-600-normal.woff2") format("woff2");
+      font-weight: 600; font-style: normal; font-display: swap;
+    }
+    :root {
+      --night: #172831;
+      --night-soft: #21353c;
+      --cream: #f2ecdf;
+      --paper: #fbf8ef;
+      --ink: #27342f;
+      --muted: #76776b;
+      --moss: #647a61;
+      --mist: #dce4d9;
+      --blossom: #e9a7aa;
+      --plum: #9e8197;
+      --brass: #d1ae70;
+      --serif: "Iowan Old Style", "Baskerville", "Palatino Linotype", Georgia, serif;
+      --sans: "DM Sans", "Avenir Next", Avenir, sans-serif;
+      --max: 1340px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--cream); color: var(--ink); font: 400 15px/1.7 var(--sans); }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    ::selection { background: #e7b8b3; color: var(--night); }
+    .wrap { width: min(var(--max), calc(100% - 76px)); margin-inline: auto; }
+    .eyebrow { font-size: 9px; font-weight: 600; letter-spacing: .19em; line-height: 1.5; text-transform: uppercase; }
+    .serif { font-family: var(--serif); font-weight: 400; }
+
+    .topline { position: relative; z-index: 3; padding: 8px 20px; background: #101e25; color: rgba(242,236,223,.73); text-align: center; font-size: 8px; letter-spacing: .2em; text-transform: uppercase; }
+    .topline span { color: var(--blossom); }
+    .masthead { position: absolute; z-index: 3; inset: 32px 0 auto; color: var(--paper); }
+    .nav { display: flex; align-items: center; justify-content: space-between; min-height: 83px; border-bottom: 1px solid rgba(251,248,239,.26); }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font: 500 18px/1 var(--sans); letter-spacing: -.04em; }
+    .brand img { width: 31px; height: 31px; object-fit: contain; filter: brightness(0) invert(1); }
+    .nav-links { display: flex; align-items: center; gap: clamp(24px, 4vw, 52px); color: rgba(251,248,239,.8); font-size: 11px; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover { color: var(--blossom); }
+    .nav-end { display: flex; align-items: center; gap: 10px; color: rgba(251,248,239,.7); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
+    .nav-end .star { color: var(--brass); font-size: 16px; }
+
+    .hero { position: relative; isolation: isolate; min-height: min(940px, 100svh); height: 830px; max-height: 1020px; overflow: hidden; display: flex; align-items: center; color: var(--paper); background: var(--night); }
+    .scene-camera { position: absolute; z-index: -3; inset: -3%; overflow: hidden; transform: translate3d(var(--shift-x,0),var(--shift-y,0),0); transition: transform .5s ease-out; will-change: transform; animation: landscape-drift 28s ease-in-out infinite alternate; }
+    .hero-image { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 52%; transform: scale(1.025); }
+    .hero::before { content: ""; position: absolute; z-index: -2; inset: 0; background: linear-gradient(90deg, rgba(13,27,34,.86) 0%, rgba(16,31,38,.7) 29%, rgba(17,31,37,.27) 59%, rgba(17,31,37,.05) 100%), linear-gradient(0deg, rgba(12,25,28,.53), transparent 26%, transparent 76%, rgba(13,27,34,.32)); }
+    .hero::after { content: ""; position: absolute; z-index: -1; inset: 0; pointer-events: none; opacity: .22; mix-blend-mode: soft-light; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.3'/%3E%3C/svg%3E"); }
+    .atmosphere { position: absolute; z-index: -1; inset: 0; overflow: hidden; pointer-events: none; }
+    .mist { position: absolute; width: 72vw; height: 135px; border-radius: 50%; opacity: .2; filter: blur(24px); background: radial-gradient(ellipse, rgba(220,231,216,.78), rgba(179,201,192,.2) 43%, transparent 72%); }
+    .mist-one { left: -9%; top: 48%; animation: mist-drift-one 33s ease-in-out infinite alternate; }
+    .mist-two { right: -20%; top: 57%; width: 82vw; height: 105px; opacity: .18; animation: mist-drift-two 39s ease-in-out infinite alternate; }
+    .mist-three { left: 15%; top: 64%; width: 58vw; height: 88px; opacity: .12; animation: mist-drift-three 27s ease-in-out infinite alternate; }
+    .sunbeam { position: absolute; top: -15%; height: 115%; width: 18%; opacity: .2; filter: blur(15px); mix-blend-mode: screen; clip-path: polygon(24% 0, 47% 0, 100% 100%, 0 100%); background: linear-gradient(180deg, rgba(255,242,205,.78), rgba(255,237,184,.22) 42%, transparent 100%); }
+    .beam-one { left: 28%; transform: rotate(-8deg); animation: beam-breathe 8s ease-in-out infinite alternate; }
+    .beam-two { left: 43%; width: 13%; opacity: .13; transform: rotate(5deg); animation: beam-breathe 11s ease-in-out -4s infinite alternate-reverse; }
+    .cloud-layer { position: absolute; z-index: -1; top: 8%; left: -15%; width: 130%; height: 47%; overflow: visible; pointer-events: none; opacity: .44; filter: blur(13px); }
+    .cloud-shape { fill: none; stroke: rgba(231,235,224,.48); stroke-width: 36; stroke-linecap: round; }
+    .cloud-shape.thin { stroke-width: 21; opacity: .65; }
+    .cloud-a { animation: cloud-drift 76s linear infinite alternate; }
+    .cloud-b { animation: cloud-drift-reverse 93s linear infinite alternate; opacity: .62; }
+    .blossom-bough { position: absolute; z-index: 1; top: -2%; right: -1%; width: min(49vw, 690px); height: auto; overflow: visible; transform-origin: 98% 2%; animation: branch-sway 8s ease-in-out infinite alternate; pointer-events: none; filter: drop-shadow(0 4px 9px rgba(20,27,29,.27)); }
+    .flying-birds { position: absolute; z-index: 1; top: 31%; left: 40%; width: 220px; height: 90px; overflow: visible; opacity: .78; pointer-events: none; }
+    .bird { fill: none; stroke: rgba(246,242,225,.86); stroke-width: 2; stroke-linecap: round; }
+    .bird-one { animation: bird-drift 18s linear infinite; }
+    .bird-two { animation: bird-drift 23s linear -8s infinite; opacity: .7; }
+    .petal-canvas { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr .72fr; align-items: center; width: min(var(--max), calc(100% - 76px)); margin: auto; padding-top: 58px; }
+    .hero-copy { max-width: 650px; padding: 35px 0 42px; }
+    .kicker { display: flex; align-items: center; gap: 13px; color: #eed0c9; }
+    .kicker::before { content: ""; width: 25px; height: 1px; background: var(--blossom); }
+    h1 { max-width: 670px; margin: 24px 0 19px; font: 400 clamp(64px, 8.3vw, 116px)/.91 var(--serif); letter-spacing: -.058em; text-wrap: balance; }
+    h1 em { color: #f0c1c1; font-weight: 400; }
+    .hero-copy p { max-width: 405px; margin: 0; color: rgba(251,248,239,.79); font-size: 14px; line-height: 1.9; }
+    .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 23px; margin-top: 30px; }
+    .button { display: inline-flex; align-items: center; gap: 16px; padding: 13px 18px; border: 1px solid rgba(251,248,239,.7); color: var(--paper); font-size: 10px; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+    .button:hover { color: var(--night); background: var(--paper); border-color: var(--paper); }
+    .button span { color: var(--blossom); font-size: 15px; }
+    .quiet-link { color: rgba(251,248,239,.82); border-bottom: 1px solid rgba(251,248,239,.4); padding: 7px 0; font-size: 10px; }
+    .quiet-link:hover { color: #f0c1c1; border-color: #f0c1c1; }
+    .hero-aside { justify-self: end; align-self: end; margin: 0 1% 55px 0; color: rgba(251,248,239,.83); text-align: right; }
+    .hero-aside .tiny { color: #eed0c9; font-size: 8px; letter-spacing: .19em; text-transform: uppercase; }
+    .hero-aside p { margin: 8px 0 0; font: italic 18px/1.25 var(--serif); }
+    .hero-foot { position: absolute; z-index: 2; bottom: 0; left: 0; right: 0; border-top: 1px solid rgba(251,248,239,.27); }
+    .hero-foot .wrap { display: flex; justify-content: space-between; align-items: center; gap: 18px; min-height: 48px; }
+    .hero-foot span { color: rgba(251,248,239,.72); font-size: 8px; letter-spacing: .16em; text-transform: uppercase; }
+    .hero-foot .dot { color: var(--blossom); padding-inline: 7px; }
+    .motion-control { position: absolute; z-index: 4; right: max(38px, calc((100vw - var(--max)) / 2)); bottom: 68px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid rgba(251,248,239,.36); background: rgba(15,31,38,.35); color: rgba(251,248,239,.86); font-size: 9px; cursor: pointer; backdrop-filter: blur(8px); }
+    .motion-control:hover { border-color: var(--blossom); }
+    .motion-control .state { color: var(--blossom); font-size: 13px; }
+
+    .intro { position: relative; padding: 126px 0 135px; background: var(--cream); }
+    .intro-grid { display: grid; grid-template-columns: .58fr 1.42fr; gap: 8vw; }
+    .intro-label { color: var(--moss); padding-top: 12px; }
+    .intro h2 { max-width: 860px; margin: 0; font: 400 clamp(44px, 6.4vw, 84px)/1.02 var(--serif); letter-spacing: -.052em; }
+    .intro h2 em { color: var(--berry, #986b70); }
+    .intro-detail { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 45px; margin: 54px 0 0 calc(41.5% + 8vw); padding-top: 21px; border-top: 1px solid rgba(39,52,47,.2); }
+    .intro-detail p { max-width: 395px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.9; }
+    .signature { justify-self: end; color: var(--moss); font: italic 18px/1.2 var(--serif); }
+
+    .work { padding: 103px 0 117px; background: var(--paper); }
+    .work-head { display: flex; justify-content: space-between; align-items: end; gap: 35px; margin-bottom: 39px; }
+    .work-head .eyebrow { color: var(--moss); }
+    .work-head h2 { margin: 10px 0 0; font: 400 clamp(42px, 5.5vw, 70px)/1 var(--serif); letter-spacing: -.05em; }
+    .work-head p { max-width: 290px; margin: 0 0 3px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+    .work-grid { display: grid; grid-template-columns: 1.15fr .85fr .85fr; gap: 14px; }
+    .work-card { position: relative; min-height: 387px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; color: var(--paper); background: var(--night); isolation: isolate; }
+    .work-card:nth-child(2) { color: var(--ink); background: #d4d9c3; }
+    .work-card:nth-child(3) { color: var(--ink); background: #e7d4cf; }
+    .work-card::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(12,26,30,.04) 20%, rgba(12,26,30,.75)); }
+    .work-card:nth-child(2)::after { background: linear-gradient(180deg, rgba(237,239,221,.02) 20%, rgba(32,52,43,.71)); }
+    .work-card:nth-child(3)::after { background: linear-gradient(180deg, rgba(237,239,221,.02) 20%, rgba(53,43,47,.7)); }
+    .card-art { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; }
+    .card-meta, .card-copy { position: relative; z-index: 1; }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; font-size: 8px; letter-spacing: .17em; text-transform: uppercase; }
+    .card-meta span:last-child { color: var(--blossom); font: 400 13px/1 var(--serif); }
+    .card-copy h3 { max-width: 245px; margin: 0; font: 400 30px/1 var(--serif); letter-spacing: -.035em; }
+    .card-copy p { max-width: 220px; margin: 10px 0 0; color: rgba(251,248,239,.74); font-size: 10px; line-height: 1.6; }
+    .work-card:nth-child(2) .card-copy p, .work-card:nth-child(3) .card-copy p { color: rgba(251,248,239,.84); }
+
+    .closing { position: relative; overflow: hidden; padding: 94px 0 100px; color: var(--paper); background: var(--night); }
+    .closing::before { content: ""; position: absolute; width: 560px; height: 560px; right: -205px; top: -310px; border: 1px solid rgba(233,167,170,.27); border-radius: 50%; box-shadow: 0 0 0 34px rgba(233,167,170,.04), 0 0 0 83px rgba(233,167,170,.03); }
+    .closing .wrap { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 32px; }
+    .closing .eyebrow { color: #e9b5b1; }
+    .closing h2 { max-width: 700px; margin: 13px 0 0; font: 400 clamp(44px, 6vw, 74px)/1 var(--serif); letter-spacing: -.052em; }
+    .closing a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 13px; padding: 14px 17px; border: 1px solid rgba(251,248,239,.65); font-size: 10px; }
+    .closing a:hover { color: var(--night); background: var(--paper); }
+    footer { color: rgba(251,248,239,.74); background: #101e25; }
+    .footer-main { display: flex; justify-content: space-between; align-items: center; gap: 18px; min-height: 79px; }
+    .footer-brand { color: var(--paper); font-size: 14px; letter-spacing: -.04em; }
+    .footer-meta { font-size: 8px; letter-spacing: .14em; text-transform: uppercase; }
+    @keyframes landscape-drift { from { scale: 1.015; } to { scale: 1.075; } }
+    @keyframes mist-drift-one { from { transform: translate3d(-7%,0,0) scaleX(.92); } to { transform: translate3d(15%,-12px,0) scaleX(1.15); } }
+    @keyframes mist-drift-two { from { transform: translate3d(8%,10px,0) scaleX(1.1); } to { transform: translate3d(-18%,-8px,0) scaleX(.9); } }
+    @keyframes mist-drift-three { from { transform: translate3d(-8%,0,0); } to { transform: translate3d(21%,-9px,0); } }
+    @keyframes beam-breathe { from { opacity: .08; translate: -2% 0; } to { opacity: .28; translate: 3% 0; } }
+    @keyframes cloud-drift { from { translate: -2% 0; } to { translate: 7% 2%; } }
+    @keyframes cloud-drift-reverse { from { translate: 4% 1%; } to { translate: -5% -1%; } }
+    @keyframes branch-sway { from { rotate: -1deg; } to { rotate: 1.4deg; } }
+    @keyframes bird-drift { from { translate: -120px 5px; } to { translate: 260px -18px; } }
+    .hero.motion-paused *, .hero.motion-paused *::before, .hero.motion-paused *::after { animation-play-state: paused !important; }
+    .hero.motion-enabled .scene-camera { animation-duration: 28s !important; }
+    .hero.motion-enabled .mist-one { animation-duration: 33s !important; }
+    .hero.motion-enabled .mist-two { animation-duration: 39s !important; }
+    .hero.motion-enabled .mist-three { animation-duration: 27s !important; }
+    .hero.motion-enabled .beam-one { animation-duration: 8s !important; }
+    .hero.motion-enabled .beam-two { animation-duration: 11s !important; }
+    .hero.motion-enabled .cloud-a { animation-duration: 76s !important; }
+    .hero.motion-enabled .cloud-b { animation-duration: 93s !important; }
+    .hero.motion-enabled .blossom-bough { animation-duration: 8s !important; }
+    .hero.motion-enabled .bird-one { animation-duration: 18s !important; }
+    .hero.motion-enabled .bird-two { animation-duration: 23s !important; }
+
+    @media (max-width: 850px) {
+      .wrap, .hero-inner { width: min(var(--max), calc(100% - 48px)); }
+      .nav { min-height: 72px; }
+      .nav-end { display: none; }
+      .hero { min-height: 820px; height: min(900px, 100svh); }
+      .hero-image { object-position: 59% center; }
+      .hero::before { background: linear-gradient(90deg, rgba(13,27,34,.82), rgba(16,31,38,.54) 60%, rgba(17,31,37,.14)), linear-gradient(0deg, rgba(12,25,28,.54), transparent 35%, rgba(13,27,34,.22)); }
+      .hero-inner { grid-template-columns: 1fr; padding-top: 68px; }
+      .hero-copy { max-width: 610px; }
+      .hero-aside { display: none; }
+      .intro { padding: 95px 0 103px; }
+      .intro-grid { grid-template-columns: 1fr; gap: 23px; }
+      .intro-label { padding: 0; }
+      .intro-detail { margin-left: 0; gap: 28px; }
+      .work { padding: 80px 0 90px; }
+      .work-grid { grid-template-columns: 1fr 1fr; }
+      .work-card:first-child { grid-column: span 2; min-height: 400px; }
+      .work-card { min-height: 340px; }
+    }
+    @media (max-width: 560px) {
+      .wrap, .hero-inner { width: calc(100% - 38px); }
+      .topline { font-size: 7px; letter-spacing: .12em; }
+      .masthead { inset-block-start: 30px; }
+      .nav { min-height: 68px; }
+      .brand { font-size: 16px; }
+      .brand img { width: 27px; height: 27px; }
+      .nav-links { gap: 16px; font-size: 9px; }
+      .hero { min-height: 795px; height: 100svh; max-height: 930px; align-items: flex-start; }
+      .scene-camera { inset: -2% -40% -2% -1%; }
+      .hero-image { object-position: 63% center; }
+      .hero::before { background: linear-gradient(90deg, rgba(13,27,34,.82), rgba(16,31,38,.51) 76%, rgba(17,31,37,.25)), linear-gradient(0deg, rgba(12,25,28,.57), transparent 35%, rgba(13,27,34,.22)); }
+      .hero-inner { padding-top: 0; padding-bottom: 97px; margin-top: 21vh; }
+      .hero-copy { padding: 14px 0 0; }
+      h1 { max-width: 440px; font-size: clamp(61px, 15.8vw, 82px); }
+      .hero-copy p { max-width: 345px; font-size: 12px; }
+      .actions { gap: 15px; margin-top: 23px; }
+      .button { padding: 12px 13px; }
+      .motion-control { right: 18px; bottom: 75px; padding: 7px 9px; font-size: 8px; }
+      .hero-foot .wrap { align-items: flex-start; flex-direction: column; justify-content: center; gap: 0; min-height: 49px; }
+      .hero-foot span { font-size: 7px; }
+      .intro { padding: 75px 0 80px; }
+      .intro h2 { font-size: 49px; }
+      .intro-detail { grid-template-columns: 1fr; margin-top: 32px; gap: 20px; }
+      .signature { justify-self: start; }
+      .work-head { align-items: flex-start; flex-direction: column; gap: 15px; margin-bottom: 27px; }
+      .work-head p { max-width: 320px; }
+      .work-grid { grid-template-columns: 1fr; gap: 11px; }
+      .work-card:first-child { grid-column: auto; min-height: 355px; }
+      .work-card { min-height: 330px; }
+      .closing { padding: 76px 0 80px; }
+      .closing .wrap { align-items: flex-start; flex-direction: column; }
+      .closing h2 { font-size: 53px; }
+      .footer-main { align-items: flex-start; flex-direction: column; justify-content: center; padding-block: 17px; gap: 7px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topline">A Mavern specimen <span>✿</span> an imagined little world in spring</div>
+  <header class="masthead">
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="brand" href="#top" aria-label="Mavern home"><img src="../../assets/mavern-logo.png" alt="" /><span>Mavern</span></a>
+      <div class="nav-links"><a href="#work">The work</a><a href="#about">The practice</a><a href="#work">Small worlds</a></div>
+      <div class="nav-end"><span class="star">✳</span> wonder lives here</div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top" aria-label="Sakura valley scene">
+      <div class="scene-camera"><img class="hero-image" src="./assets/mavern-sakura-valley-v1.webp" alt="A flowering sakura tree above a quiet mountain valley" /></div>
+      <div class="atmosphere" aria-hidden="true"><div class="mist mist-one"></div><div class="mist mist-two"></div><div class="mist mist-three"></div><div class="sunbeam beam-one"></div><div class="sunbeam beam-two"></div></div>
+      <svg class="cloud-layer" viewBox="0 0 1600 650" preserveAspectRatio="none" aria-hidden="true"><g class="cloud-a"><path class="cloud-shape" d="M-40 175c126-74 215-69 329-12s194 64 312 4 220-75 350-13 221 69 387-1"/><path class="cloud-shape thin" d="M-50 236c155-54 225-26 336 13s197 37 302-13 217-59 346-9 235 42 418-17"/></g><g class="cloud-b"><path class="cloud-shape thin" d="M-70 305c133-47 245-35 353 13 115 52 196 52 310-6s202-75 342-20 227 65 425-3"/></g></svg>
+      <svg class="blossom-bough" viewBox="0 0 720 460" aria-hidden="true">
+        <g fill="none" stroke="#30292a" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M713 1C654 52 602 77 551 96s-82 40-119 74-67 57-112 72" stroke-width="24" opacity=".9"/>
+          <path d="M574 88c-29-38-60-59-101-76M551 97c-9-41-7-70 5-96M486 120c-56-13-96-34-130-73M463 132c-21-43-28-75-25-113M429 163c-53 7-91 2-136-18M405 179c-7-44-4-76 9-116M357 211c-32-26-58-57-77-92M331 228c-15-22-28-38-51-48M533 105c-5 38 3 70 26 103M524 111c-41 5-68 20-101 45" stroke-width="11" opacity=".86"/>
+          <path d="M713 1C654 52 602 77 551 96s-82 40-119 74-67 57-112 72" stroke="#75534a" stroke-width="4" opacity=".74"/>
+        </g>
+        <g fill="#e9a7aa" stroke="#f4d2ce" stroke-width="2">
+          <g transform="translate(458 42)"><circle r="17"/><ellipse cy="-19" ry="13" rx="7"/><ellipse cy="19" ry="13" rx="7"/><ellipse cx="-19" rx="13" ry="7"/><ellipse cx="19" rx="13" ry="7"/><ellipse cx="-14" cy="-14" rx="12" ry="7" transform="rotate(-45 -14 -14)"/><ellipse cx="14" cy="14" rx="12" ry="7" transform="rotate(-45 14 14)"/><circle r="4" fill="#d4ae68" stroke="none"/></g>
+          <g transform="translate(548 65) scale(.84)"><circle r="17"/><ellipse cy="-19" ry="13" rx="7"/><ellipse cy="19" ry="13" rx="7"/><ellipse cx="-19" rx="13" ry="7"/><ellipse cx="19" rx="13" ry="7"/><ellipse cx="-14" cy="-14" rx="12" ry="7" transform="rotate(-45 -14 -14)"/><ellipse cx="14" cy="14" rx="12" ry="7" transform="rotate(-45 14 14)"/><circle r="4" fill="#d4ae68" stroke="none"/></g>
+          <g transform="translate(360 102) scale(.72)"><circle r="17"/><ellipse cy="-19" ry="13" rx="7"/><ellipse cy="19" ry="13" rx="7"/><ellipse cx="-19" rx="13" ry="7"/><ellipse cx="19" rx="13" ry="7"/><ellipse cx="-14" cy="-14" rx="12" ry="7" transform="rotate(-45 -14 -14)"/><ellipse cx="14" cy="14" rx="12" ry="7" transform="rotate(-45 14 14)"/><circle r="4" fill="#d4ae68" stroke="none"/></g>
+          <g transform="translate(412 206) scale(.68)"><circle r="17"/><ellipse cy="-19" ry="13" rx="7"/><ellipse cy="19" ry="13" rx="7"/><ellipse cx="-19" rx="13" ry="7"/><ellipse cx="19" rx="13" ry="7"/><ellipse cx="-14" cy="-14" rx="12" ry="7" transform="rotate(-45 -14 -14)"/><ellipse cx="14" cy="14" rx="12" ry="7" transform="rotate(-45 14 14)"/><circle r="4" fill="#d4ae68" stroke="none"/></g>
+          <g transform="translate(302 166) scale(.74)"><circle r="17"/><ellipse cy="-19" ry="13" rx="7"/><ellipse cy="19" ry="13" rx="7"/><ellipse cx="-19" rx="13" ry="7"/><ellipse cx="19" rx="13" ry="7"/><ellipse cx="-14" cy="-14" rx="12" ry="7" transform="rotate(-45 -14 -14)"/><ellipse cx="14" cy="14" rx="12" ry="7" transform="rotate(-45 14 14)"/><circle r="4" fill="#d4ae68" stroke="none"/></g>
+        </g>
+      </svg>
+      <svg class="flying-birds" viewBox="0 0 220 90" aria-hidden="true"><g class="bird bird-one"><path d="M2 25q9-11 18 0 9-11 18 0M54 43q7-8 14 0 7-8 14 0M113 20q9-12 18 0 9-12 18 0"/></g><g class="bird bird-two"><path d="M3 29q6-7 12 0 6-7 12 0M81 55q7-9 14 0 7-9 14 0M145 39q8-10 16 0 8-10 16 0"/></g></svg>
+      <canvas class="petal-canvas" aria-hidden="true"></canvas>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <div class="kicker eyebrow">An independent creative practice</div>
+          <h1>Make room<br />for <em>wonder.</em></h1>
+          <p>A home for development, art, music, writing, and experiments that grow into their own kind of thing.</p>
+          <div class="actions"><a class="button" href="#work">Wander through <span aria-hidden="true">↗</span></a><a class="quiet-link" href="#about">A little about Mavern</a></div>
+        </div>
+        <div class="hero-aside"><div class="tiny">Somewhere, in early spring</div><p>Even the quiet things<br />are on their way.</p></div>
+      </div>
+      <button class="motion-control" type="button" aria-pressed="false" aria-label="Pause scene motion"><span class="state" aria-hidden="true">Ⅱ</span><span class="label">Pause motion</span></button>
+      <div class="hero-foot"><div class="wrap"><span>Development <i class="dot">✿</i> Art <i class="dot">✿</i> Music <i class="dot">✿</i> Writing</span><span>Creativity is the objective.</span></div></div>
+    </section>
+
+    <section class="intro" id="about">
+      <div class="wrap">
+        <div class="intro-grid">
+          <div class="intro-label eyebrow">A place to begin</div>
+          <h2>Mavern is a home for ideas that grow into <em>many forms.</em></h2>
+        </div>
+        <div class="intro-detail">
+          <p>Some things start as a line of code. Others arrive as a melody, a picture, a paragraph, or a place you can step inside. They can all belong here.</p>
+          <div class="signature">Independent by nature. Curious by habit.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="work" id="work">
+      <div class="wrap">
+        <div class="work-head">
+          <div><div class="eyebrow">A cabinet of curiosities</div><h2>Many little worlds.</h2></div>
+          <p>A practice without one medium. Each piece gets to find the shape that suits it.</p>
+        </div>
+        <div class="work-grid">
+          <a class="work-card" href="#work" aria-label="Software and development">
+            <svg class="card-art" viewBox="0 0 600 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="600" height="500" fill="#334b52"/>
+              <circle cx="474" cy="116" r="94" fill="#dcbd83" opacity=".8"/>
+              <path d="M0 280c120-44 205 4 292 18s169-26 308-73v275H0z" fill="#465f58"/><path d="M0 367c133-74 239-31 338-3s164-7 262-65v201H0z" fill="#203831"/>
+              <g transform="translate(164 144) rotate(-5 130 105)"><rect x="10" y="11" width="258" height="205" fill="#182d30" opacity=".42"/><rect width="258" height="205" fill="#eee5d4" stroke="#2d3832" stroke-width="3"/><path d="M0 29h258" stroke="#8e846d"/><circle cx="15" cy="14" r="3" fill="#914b47"/><circle cx="27" cy="14" r="3" fill="#d1ae70"/><path d="M28 59h72M28 78h165M28 104h47M90 104h104M28 135h179M28 159h115" stroke="#627b68" stroke-width="5" stroke-linecap="round"/><path d="m187 162 13 13 27-32" fill="none" stroke="#914b47" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></g>
+              <g fill="#f1d9a0"><circle cx="96" cy="120" r="3"/><circle cx="516" cy="275" r="4"/><circle cx="111" cy="423" r="2.5"/></g>
+            </svg>
+            <div class="card-meta"><span>01 · The maker's bench</span><span>↗</span></div>
+            <div class="card-copy"><h3>Software &amp; tools</h3><p>Small systems, useful ideas, curious experiments.</p></div>
+          </a>
+          <a class="work-card" href="#work" aria-label="Games and play">
+            <svg class="card-art" viewBox="0 0 420 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="420" height="500" fill="#89916e"/><circle cx="307" cy="107" r="52" fill="#eadbb3"/>
+              <path d="M0 307c100-79 205-67 270-26s105 17 150-8v227H0z" fill="#53684e"/><path d="M0 379c120-68 207-27 274 9s100 24 146-4v116H0z" fill="#273d32"/>
+              <path d="M176 500c28-69 76-100 77-161 1-53-32-90 2-132 20-25 48-33 77-48-11 47-55 63-51 105 4 41 31 53 15 102-15 45-65 80-87 134z" fill="#d1b281"/>
+              <g transform="translate(117 193)"><path d="M21 112 74 57l60 55v69H21z" fill="#a65b50" stroke="#293a32" stroke-width="4"/><path d="m8 116 66-68 72 69-13 11-59-57-56 57z" fill="#57453b" stroke="#293a32" stroke-width="4"/><path d="M59 181v-48c0-16 9-27 22-27s22 11 22 27v48" fill="#e9d9aa" stroke="#293a32" stroke-width="3"/><path d="M34 133h22v25H34zM106 133h22v25h-22z" fill="#e9d9aa" stroke="#293a32" stroke-width="3"/></g>
+              <g fill="#f0dfab"><circle cx="79" cy="332" r="3"/><circle cx="341" cy="340" r="4"/><circle cx="306" cy="425" r="3"/></g>
+            </svg>
+            <div class="card-meta"><span>02 · The far green country</span><span>↗</span></div>
+            <div class="card-copy"><h3>Games &amp; play</h3><p>Worlds to explore and stories to take part in.</p></div>
+          </a>
+          <a class="work-card" href="#work" aria-label="Art, music and writing">
+            <svg class="card-art" viewBox="0 0 420 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="420" height="500" fill="#9e7d7f"/><circle cx="211" cy="217" r="136" fill="#e0d1b2" opacity=".94"/><circle cx="211" cy="217" r="106" fill="none" stroke="#72535b" stroke-width="2" opacity=".65"/><circle cx="211" cy="217" r="75" fill="none" stroke="#72535b" stroke-width="2" opacity=".5"/><circle cx="211" cy="217" r="44" fill="none" stroke="#72535b" stroke-width="2" opacity=".45"/><circle cx="211" cy="217" r="14" fill="#a65b50"/><path d="M211 80v273M74 217h274M114 120l194 194M308 120 114 314" stroke="#72535b" stroke-opacity=".25"/>
+              <path d="M34 411c52-28 62-26 86-10s37-51 61-48 24 70 51 69 30-84 57-79 33 39 51 37 29-14 48-23" fill="none" stroke="#f2e6cf" stroke-width="3"/><path d="M34 423c52-28 62-26 86-10s37-51 61-48 24 70 51 69 30-84 57-79 33 39 51 37 29-14 48-23" fill="none" stroke="#f2e6cf" stroke-opacity=".45"/>
+            </svg>
+            <div class="card-meta"><span>03 · The listening room</span><span>↗</span></div>
+            <div class="card-copy"><h3>Art, music &amp; words</h3><p>Things heard, seen, read, and left to wonder about.</p></div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <div class="wrap">
+        <div><div class="eyebrow">Mavern · An independent creative practice</div><h2>Creativity is the objective.</h2></div>
+        <a href="mailto:hello@mavern.in">Write to Mavern <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+  </main>
+  <footer><div class="footer-main wrap"><a class="footer-brand" href="#top">Mavern</a><span class="footer-meta">Development · Art · Music · Writing</span><span class="footer-meta">A little wonder, now and then.</span></div></footer>
+
+  <script>
+    (() => {
+      const hero = document.querySelector(".hero");
+      const canvas = document.querySelector(".petal-canvas");
+      const context = canvas.getContext("2d", { alpha: true });
+      const button = document.querySelector(".motion-control");
+      const buttonLabel = button.querySelector(".label");
+      const buttonIcon = button.querySelector(".state");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const petals = [];
+      const palette = ["#f3c5c2", "#e9a7aa", "#f6d9cf", "#d88c9d", "#f1c8d0"];
+      let width = 0;
+      let height = 0;
+      let dpr = 1;
+      let previousTime = 0;
+      let running = !reducedMotion.matches;
+      let frame = 0;
+      let pointer = { x: .5, y: .5 };
+
+      const makePetal = (initial = false) => ({
+        x: Math.random(),
+        y: initial ? Math.random() : -.05 - Math.random() * .12,
+        z: .13 + Math.random() * .87,
+        size: 3 + Math.random() * 5,
+        speed: .018 + Math.random() * .055,
+        drift: .22 + Math.random() * .8,
+        phase: Math.random() * Math.PI * 2,
+        spin: (Math.random() - .5) * 2.8,
+        turn: Math.random() * Math.PI * 2,
+        color: palette[Math.floor(Math.random() * palette.length)],
+        alpha: .48 + Math.random() * .48,
+      });
+
+      const resize = () => {
+        const rect = hero.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        dpr = Math.min(window.devicePixelRatio || 1, 1.7);
+        canvas.width = Math.round(width * dpr);
+        canvas.height = Math.round(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+
+      const drawPetal = (petal, time) => {
+        const perspective = .28 + petal.z * .95;
+        const x = petal.x * width + Math.sin(time * .00045 + petal.phase) * (8 + petal.drift * 22) * perspective;
+        const y = petal.y * height;
+        const size = petal.size * perspective * (width < 600 ? .85 : 1);
+        context.save();
+        context.translate(x, y);
+        context.rotate(petal.turn);
+        context.globalAlpha = petal.alpha * (.36 + petal.z * .64);
+        if (petal.z > .86) context.filter = "blur(1.2px)";
+        const gradient = context.createLinearGradient(-size, -size, size, size);
+        gradient.addColorStop(0, "#fff0e5");
+        gradient.addColorStop(.42, petal.color);
+        gradient.addColorStop(1, "#bd7586");
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.moveTo(0, -size * 1.5);
+        context.bezierCurveTo(size * 1.1, -size * .95, size * 1.05, size * .7, 0, size * 1.38);
+        context.bezierCurveTo(-size * 1.08, size * .7, -size * 1.05, -size * .95, 0, -size * 1.5);
+        context.fill();
+        context.restore();
+      };
+
+      const paint = (time) => {
+        context.clearRect(0, 0, width, height);
+        const delta = Math.min((time - (previousTime || time)) / 16.67, 2.4);
+        previousTime = time;
+        const wind = .00062 + Math.sin(time * .00032) * .00025;
+        for (let i = 0; i < petals.length; i += 1) {
+          const petal = petals[i];
+          petal.y += petal.speed * delta * (.48 + petal.z * .96);
+          petal.x += (wind * petal.drift + Math.sin(time * .0005 + petal.phase) * .00027) * delta * (.5 + petal.z);
+          petal.turn += petal.spin * .009 * delta;
+          if (petal.y > 1.08 || petal.x > 1.12 || petal.x < -.12) petals[i] = makePetal(false);
+          drawPetal(petals[i], time);
+        }
+        frame = window.requestAnimationFrame(paint);
+      };
+
+      const paintOnce = () => {
+        context.clearRect(0, 0, width, height);
+        petals.forEach((petal) => drawPetal(petal, 0));
+      };
+
+      const start = () => {
+        if (running && !frame) frame = window.requestAnimationFrame(paint);
+      };
+      const stop = () => {
+        running = false;
+        if (frame) window.cancelAnimationFrame(frame);
+        frame = 0;
+      };
+      const syncButton = () => {
+        hero.classList.toggle("motion-paused", !running);
+        hero.classList.toggle("motion-enabled", running);
+        button.setAttribute("aria-pressed", String(!running));
+        button.setAttribute("aria-label", running ? "Pause scene motion" : "Resume scene motion");
+        buttonLabel.textContent = running ? "Pause motion" : "Resume motion";
+        buttonIcon.textContent = running ? "Ⅱ" : "▶";
+      };
+
+      resize();
+      for (let i = 0; i < 58; i += 1) petals.push(makePetal(true));
+      if (running) start(); else paintOnce();
+      button.addEventListener("click", () => {
+        if (running) stop();
+        else { running = true; previousTime = 0; start(); }
+        syncButton();
+      });
+      window.addEventListener("resize", resize, { passive: true });
+      hero.addEventListener("pointermove", (event) => {
+        const rect = hero.getBoundingClientRect();
+        pointer = { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height };
+        hero.querySelector(".scene-camera").style.setProperty("--shift-x", `${(pointer.x - .5) * -9}px`);
+        hero.querySelector(".scene-camera").style.setProperty("--shift-y", `${(pointer.y - .5) * -6}px`);
+      }, { passive: true });
+      hero.addEventListener("pointerleave", () => {
+        hero.querySelector(".scene-camera").style.setProperty("--shift-x", "0px");
+        hero.querySelector(".scene-camera").style.setProperty("--shift-y", "0px");
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden && running) {
+          window.cancelAnimationFrame(frame);
+          frame = 0;
+        } else if (!document.hidden && running) start();
+      });
+      reducedMotion.addEventListener("change", (event) => {
+        if (event.matches) { stop(); syncButton(); }
+      });
+      syncButton();
+    })();
+  </script>
+</body>
+</html>
