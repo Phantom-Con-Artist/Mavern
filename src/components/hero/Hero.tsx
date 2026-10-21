@@ -7,7 +7,7 @@ import { mediums } from "@/content/mediums";
 import { usePageActive } from "@/hooks/usePageActive";
 import { HeroFallback } from "./HeroFallback";
 
-const HeadCityScene = dynamic(() => import("./HeadCityScene"), { ssr: false });
+const DioramaScene = dynamic(() => import("./DioramaScene"), { ssr: false });
 const words = mediums.map((m) => m.word);
 
 function canAnimate(): boolean {
@@ -43,14 +43,14 @@ export function Hero() {
   const medium = mediums[word];
 
   return (
-    <section aria-labelledby="hero-title" className="bg-ultraviolet text-sun">
+    <section aria-labelledby="hero-title" className="bg-sun text-ultraviolet">
       <div
         ref={stage}
         className="relative aspect-[4/5] max-h-[78svh] w-full sm:aspect-[16/9]"
         aria-hidden="true"
       >
         {showScene ? (
-          <HeadCityScene words={words} running={active && !paused} onWord={setWord} onFail={() => setFailed(true)} />
+          <DioramaScene words={words} running={active && !paused} onStage={(stage) => setWord(Math.max(0, stage - 1))} onFail={() => setFailed(true)} />
         ) : (
           <HeroFallback className="absolute inset-0 m-auto h-full w-full" />
         )}

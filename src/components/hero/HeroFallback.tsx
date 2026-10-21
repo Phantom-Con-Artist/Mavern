@@ -11,7 +11,7 @@ export function HeroFallback({ className }: { className?: string }) {
     <svg viewBox={`0 0 ${width} ${height}`} className={className} aria-hidden="true" data-hero-fallback>
       {rows.flatMap((row, y) =>
         row.map((on, x) =>
-          on ? <rect key={`${x}-${y}`} x={x + PAD + 0.04} y={y + PAD + 0.04} width={0.92} height={0.92} fill="var(--sun)" /> : null,
+          on ? <rect key={`${x}-${y}`} x={x + PAD + 0.04} y={y + PAD + 0.04} width={0.92} height={0.92} fill="var(--ultraviolet)" /> : null,
         ),
       )}
     </svg>

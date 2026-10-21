@@ -16,13 +16,15 @@ export type City = {
 };
 
 const CITY_WIDTH = 3.6;
-const ROOF_SHARE = 0.35;
-/** Tier boundaries as fractions of a tower's height: each tier is shorter than the one below. */
-const tierBase = (t: number) => 1 - 0.6 ** t;
+const ROOF_SHARE = 0.5;
+/** A tower steps back by this share of its width every SETBACK_EVERY tiers, down to half its footprint. */
+const SETBACK = 0.18;
+const SETBACK_EVERY = 3;
 
 /**
  * A city whose built-up blocks spell the word seen from above. Each lit pixel of the word is a block of
- * 2 × 2 lots; the blocks become stacked tower tiers on the lots, every block getting one before any gets two.
+ * 2 × 2 lots; the blocks become equal tiers of a tower on each lot (every block gets one before any gets
+ * two), stepping back every few tiers like a skyscraper.
  */
 export function buildCity(word: string, count: number, seed = 7): City {
   const rows = bitmap(word);
@@ -39,7 +41,7 @@ export function buildCity(word: string, count: number, seed = 7): City {
     blocks.map(([x, y]) => ({
       x: origin[0] + x * cell + (q % 2) * lot + lot / 2,
       z: origin[1] + y * cell + Math.floor(q / 2) * lot + lot / 2,
-      height: cell * (0.6 + rand() ** 2 * 3.4),
+      height: cell * (1 + rand() ** 2 * 5),
       painted: rand() < ROOF_SHARE,
     })),
   );
@@ -52,9 +54,10 @@ export function buildCity(word: string, count: number, seed = 7): City {
     const j = n % lots.length;
     const l = lots[j];
     const t = Math.floor(n / lots.length);
-    const bottom = l.height * tierBase(t);
-    const top = l.height * tierBase(t + 1);
-    const w = lot * 0.86 * (1 - 0.14 * t);
+    const tier = l.height / tiers[j];
+    const bottom = tier * t;
+    const top = tier * (t + 1);
+    const w = lot * 0.86 * Math.max(0.5, 1 - SETBACK * Math.floor(t / SETBACK_EVERY));
     positions.set([l.x, (bottom + top) / 2, l.z], n * 3);
     scales.set([w, top - bottom, w], n * 3);
     roof[n] = l.painted && t === tiers[j] - 1 ? 1 : 0;
