@@ -20,3 +20,4 @@ public/media
 test-results
 playwright-report
 .playwright-mcp
+public/hero/bust.bin

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/build-images.mjs && next build && node scripts/csp-hashes.mjs",
+    "build": "node scripts/build-bust.mjs && node scripts/build-images.mjs && next build && node scripts/csp-hashes.mjs",
     "start": "serve out -l 4173",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
