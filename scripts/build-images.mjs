@@ -59,6 +59,14 @@ async function main() {
       }
     }
   }
+  // Share cards, 1200×630: the default, one per figure, one per screenshot.
+  const cards = [["assets/mavern-background.png", "og-default"], ...PICTURES.map(([src, name]) => [src, `og-${name}`])];
+  for (const [src, name] of cards) {
+    const out = join(OUT, `${name}.jpg`);
+    if (await fresh(src, out)) continue;
+    await sharp(src).resize(1200, 630, { fit: "cover", position: "attention" }).jpeg({ quality: 80, mozjpeg: true }).toFile(out);
+    made++;
+  }
   for (const src of COPIES) {
     const out = join(OUT, basename(src, extname(src)) + extname(src));
     if (await fresh(src, out)) continue;

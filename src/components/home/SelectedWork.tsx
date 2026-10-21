@@ -6,37 +6,12 @@ import { useState } from "react";
 import { RiseText } from "@/components/kinetic/RiseText";
 import { Picture } from "@/components/media/Picture";
 import { getMedium } from "@/content/mediums";
-import { statusLabels, workPath, works } from "@/content/works";
-import type { Work } from "@/content/types";
+import { workPath, works } from "@/content/works";
+import { Track } from "@/components/work/Track";
 
 /** Side A: work you can open today, featured first. Side B: work still being made. */
 const sideA = [...works.filter((w) => w.screenshot && w.featured), ...works.filter((w) => w.screenshot && !w.featured)];
 const sideB = works.filter((w) => !w.screenshot);
-
-function Track({ work, code, onFocus, active }: { work: Work; code: string; onFocus?: () => void; active?: boolean }) {
-  return (
-    <li>
-      <Link
-        href={workPath(work)}
-        onMouseEnter={onFocus}
-        onFocus={onFocus}
-        aria-current={active ? "true" : undefined}
-        className="group grid grid-cols-[2.75rem_minmax(0,1fr)_auto] items-baseline gap-x-3 py-3 transition-colors duration-150 aria-[current]:bg-night aria-[current]:text-marble hover:bg-night hover:text-marble md:px-3"
-      >
-        <span className="font-display text-[0.95rem] text-violet group-hover:text-gold group-aria-[current]:text-gold">{code}</span>
-        <span className="flex min-w-0 items-baseline gap-3">
-          <span className="truncate font-display text-[clamp(1.35rem,2.6vw,2.25rem)] leading-[1.05] tracking-[-0.025em]">{work.name}</span>
-          <span aria-hidden="true" className="mb-[0.3em] hidden flex-1 border-b-2 border-dotted border-current opacity-30 sm:block" />
-        </span>
-        <span className="text-[0.875rem] font-semibold">{statusLabels[work.status]}</span>
-        <span className="col-start-2 col-end-4 mt-1 text-[0.9375rem] opacity-80">
-          {work.kind}
-          {work.version ? `, v${work.version}` : ""}
-        </span>
-      </Link>
-    </li>
-  );
-}
 
 /**
  * The catalogue as a mixtape's J-card. Side A lists the work that is live, and the track in focus
