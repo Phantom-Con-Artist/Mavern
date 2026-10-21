@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SEGMENTS, advance, pose, type LoopState } from "@/components/hero/loop";
+import { SEGMENTS, advance, pose, type LoopState } from "@/components/scene/loop";
 
 const start: LoopState = { segment: 0, t: 0 };
 const at = (segment: number, share: number): LoopState => ({ segment, t: SEGMENTS[segment].ms * share });
@@ -32,11 +32,11 @@ describe("hero loop", () => {
     ]);
   });
 
-  it("washes across each change of scene: ink out of the eye, sun back to the diorama", () => {
-    expect(pose(at(index("eye"), 1))).toMatchObject({ wash: 1, washColour: "ink" });
-    expect(pose(at(index("glance"), 0))).toMatchObject({ wash: 1, washColour: "ink" });
-    expect(pose(at(index("rise"), 1))).toMatchObject({ wash: 1, washColour: "sun" });
-    expect(pose(at(0, 0))).toMatchObject({ wash: 1, washColour: "sun" });
+  it("washes across each change of scene: night out of the eye, orchid back to the diorama", () => {
+    expect(pose(at(index("eye"), 1))).toMatchObject({ wash: 1, washColour: "night" });
+    expect(pose(at(index("glance"), 0))).toMatchObject({ wash: 1, washColour: "night" });
+    expect(pose(at(index("rise"), 1))).toMatchObject({ wash: 1, washColour: "orchid" });
+    expect(pose(at(0, 0))).toMatchObject({ wash: 1, washColour: "orchid" });
     for (const name of ["mavern", "hold-0", "hold-3"]) expect(pose(at(index(name), 0.5)).wash).toBe(0);
   });
 

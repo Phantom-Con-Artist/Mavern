@@ -13,9 +13,10 @@ import { restronaut } from "./restronaut";
 import { textTycoon } from "./text-tycoon";
 import { socialSimulationEngine } from "./social-simulation-engine";
 import { onlineTachistoscope } from "./online-tachistoscope";
+import { cineviz } from "./cineviz";
 
 /** Every work, in the order it is listed within its medium. Add a work: one file here, one line below. */
-export const works: Work[] = [volpi, chimera, notifly, scrapbean, mistletoeUi, animepoodle, respawn, gingerbinger, algalBiotechLab, lightYearSaga, restronaut, textTycoon, socialSimulationEngine, onlineTachistoscope];
+export const works: Work[] = [volpi, chimera, notifly, scrapbean, mistletoeUi, animepoodle, respawn, gingerbinger, algalBiotechLab, lightYearSaga, restronaut, textTycoon, socialSimulationEngine, onlineTachistoscope, cineviz];
 
 export const statusLabels: Record<WorkStatus, string> = {
   released: "Released",

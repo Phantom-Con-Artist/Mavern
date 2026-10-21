@@ -10,8 +10,12 @@ describe("colour grounds", () => {
     expect(contrastRatio(g.value, grounds[g.ink].value)).toBeGreaterThanOrEqual(4.5);
   });
 
-  it("rejects marble on vermilion for body text", () => {
-    expect(contrastRatio("oklch(96% 0.015 85)", "oklch(64% 0.22 32)")).toBeLessThan(4.5);
+  it("rejects marble on ember for body text", () => {
+    expect(contrastRatio(grounds.marble.value, grounds.ember.value)).toBeLessThan(4.5);
+  });
+
+  it("has the six grounds of the dusk palette", () => {
+    expect(names.sort()).toEqual(["ember", "gold", "marble", "night", "orchid", "violet"]);
   });
 
   it("is symmetric and 21:1 at the extremes", () => {
@@ -28,7 +32,7 @@ describe("colour grounds", () => {
   });
 
   it("builds ground classes", () => {
-    expect(groundClass("ultraviolet")).toBe("bg-ultraviolet text-sun");
+    expect(groundClass("gold")).toBe("bg-gold text-night");
   });
 });
 

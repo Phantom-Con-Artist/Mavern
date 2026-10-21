@@ -17,5 +17,6 @@ export const animepoodle: Work = {
     { label: "Visit animepoodle", href: "https://animepoodle.mavern.in", confirmed: true },
   ],
   featured: true,
+  screenshot: true,
   source: "Anime-website README",
 };

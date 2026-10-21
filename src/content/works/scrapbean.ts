@@ -14,6 +14,9 @@ export const scrapbean: Work = {
   status: "in-development",
   platforms: "Desktop",
   stack: ["Electron"],
-  links: [],
+  links: [
+    { label: "Visit ScrapBean", href: "https://scrapbean.mavern.in", confirmed: true },
+  ],
+  screenshot: true,
   source: "ScrapBean README",
 };

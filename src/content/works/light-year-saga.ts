@@ -11,11 +11,13 @@ export const lightYearSaga: Work = {
     "You can navigate, select and inspect anything you see, or board a guided voyage and let the ship's AI, ARIA, take the helm.",
     "It separates real data from illustration, and says which is which.",
   ],
-  status: "in-development",
+  status: "live",
   stack: ["React 19", "Three.js", "Vite", "Tailwind CSS"],
   links: [
+    { label: "Open the tour", href: "https://light-year-saga.pages.dev", confirmed: true },
     { label: "Source on GitHub", href: "https://github.com/Phantom-Con-Artist/Light-Year-Saga", confirmed: false },
   ],
   featured: true,
+  screenshot: true,
   source: "Light Year Saga README",
 };

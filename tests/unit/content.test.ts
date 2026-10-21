@@ -48,7 +48,33 @@ describe("catalogue", () => {
     expect(mediums.map((m) => m.word)).toEqual(["SOFTWARE", "WEBSITES", "APPS", "EXPERIMENTS"]);
   });
 
-  it("lists all fourteen works", () => {
-    expect(works).toHaveLength(14);
+  it("lists all fifteen works", () => {
+    expect(works).toHaveLength(15);
+  });
+});
+
+describe("medium art direction", () => {
+  it("gives every medium its own figure and ground", async () => {
+    const { mediums } = await import("@/content/mediums");
+    expect(mediums.map((m) => [m.slug, m.figure, m.ground])).toEqual([
+      ["software", "athena", "gold"],
+      ["websites", "aphrodite", "orchid"],
+      ["apps", "alexander", "ember"],
+      ["experiments", "creation", "violet"],
+    ]);
+  });
+});
+
+describe("screenshots", () => {
+  it("has a screenshot file for every work that claims one", async () => {
+    const { existsSync } = await import("node:fs");
+    const missing = works.filter((w) => w.screenshot && !existsSync(`assets/screens/${w.slug}.png`)).map((w) => w.slug);
+    expect(missing).toEqual([]);
+  });
+
+  it("shows the live sites the owner listed", () => {
+    expect(works.filter((w) => w.screenshot).map((w) => w.slug).sort()).toEqual(
+      ["algal-biotech-lab", "animepoodle", "cineviz", "light-year-saga", "online-tachistoscope", "respawn", "scrapbean", "volpi"],
+    );
   });
 });

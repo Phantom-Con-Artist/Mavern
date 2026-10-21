@@ -2,11 +2,12 @@
 @import "./tokens.css";
 
 @theme inline {
-  --color-sun: var(--sun);
-  --color-ultraviolet: var(--ultraviolet);
-  --color-vermilion: var(--vermilion);
+  --color-night: var(--night);
+  --color-violet: var(--violet);
+  --color-orchid: var(--orchid);
+  --color-gold: var(--gold);
+  --color-ember: var(--ember);
   --color-marble: var(--marble);
-  --color-ink: var(--ink);
   --font-display: var(--font-dela), "Arial Black", sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
 }
@@ -22,8 +23,8 @@
   body {
     min-width: 320px;
     margin: 0;
-    background: var(--marble);
-    color: var(--ink);
+    background: var(--night);
+    color: var(--marble);
     font-size: var(--step-text);
     line-height: 1.5;
     letter-spacing: -0.01em;
@@ -38,7 +39,88 @@
     outline-offset: 4px;
   }
 
-  ::selection { background: var(--sun); color: var(--ultraviolet); }
+  ::selection { background: var(--gold); color: var(--night); }
+}
+
+/* Components sit below utilities, so a class like max-md:hidden still wins over .osd. */
+@layer components {
+  /*
+    A control drawn as a VCR menu item: plain text that becomes a solid selection bar with a ▶ cursor
+    on hover and focus. Square, because on-screen displays were.
+  */
+  .osd {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.15em 0.5em;
+    transition: background-color 120ms steps(2), color 120ms steps(2);
+  }
+  .osd::before {
+    content: "▶";
+    font-size: 0.7em;
+    width: 0;
+    overflow: hidden;
+    transition: width 160ms var(--ease-out);
+  }
+  .osd:hover,
+  .osd:focus-visible {
+    background: var(--osd-bar, currentColor);
+    color: var(--osd-ink, var(--night));
+    outline: none;
+  }
+  .osd:hover::before,
+  .osd:focus-visible::before {
+    width: 1.3em;
+  }
+  /* On a dark ground the selection bar is marble with night text; light grounds swap it. */
+  .osd { --osd-bar: var(--marble); --osd-ink: var(--night); }
+  .osd-on-light { --osd-bar: var(--night); --osd-ink: var(--marble); }
+  .osd-solid { background: var(--osd-bar); color: var(--osd-ink); }
+  .osd-solid:hover,
+  .osd-solid:focus-visible { background: var(--gold); color: var(--night); }
+}
+
+@layer utilities {
+  /* The artwork's sunset clipped into display type. */
+  /* background-image, not the shorthand: the CSS build folds the shorthand and drops the text clip. */
+  .text-sunset {
+    background-image: var(--sunset-text);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .bg-sunset { background: var(--sunset); }
+
+  /*
+    80s chrome: a bright sky that falls to a dark horizon line, then the sunset reflected underneath.
+    Used only for the biggest display words.
+  */
+  .text-chrome {
+    background-image: linear-gradient(
+      180deg,
+      var(--marble) 4%,
+      oklch(86% 0.07 300) 30%,
+      var(--violet) 47%,
+      var(--night) 50%,
+      var(--orchid) 53%,
+      var(--gold) 78%,
+      var(--marble) 98%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  /* The glow goes on the parent: a filter on the clipped element itself makes Chrome drop the clip. */
+  .chrome-glow {
+    filter: drop-shadow(0 0.015em 0 oklch(100% 0 0 / 0.4)) drop-shadow(0 0 0.16em color-mix(in oklch, var(--orchid) 60%, transparent));
+  }
+
+
+  /* Faint scan lines, the CRT glass the synthwave palette comes from. */
+  .scanlines {
+    background: repeating-linear-gradient(180deg, oklch(0% 0 0 / 0.16) 0 1px, transparent 1px 4px);
+    mix-blend-mode: multiply;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -47,4 +129,78 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+@keyframes eq {
+  from { transform: scaleY(0.3); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes glint {
+  0%, 70%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  78% { opacity: 1; transform: scale(1) rotate(45deg); }
+  86% { opacity: 0; transform: scale(0.3) rotate(90deg); }
+}
+
+/* The on-screen display reads in marble on dark grounds and night on light ones (ToneProbe). */
+.hud-top,
+.hud-bottom {
+  transition: color 300ms var(--ease-out);
+  text-shadow: 0 0 1.2em color-mix(in oklch, var(--night) 45%, transparent);
+}
+html[data-top-tone="light"] .hud-top,
+html[data-bottom-tone="light"] .hud-bottom {
+  color: var(--night);
+  text-shadow: none;
+  --osd-bar: var(--night);
+  --osd-ink: var(--marble);
+}
+html[data-top-tone="light"] .hud-top .osd,
+html[data-bottom-tone="light"] .hud-bottom .osd {
+  --osd-bar: var(--night);
+  --osd-ink: var(--marble);
+}
+
+/* VHS pieces, used only inside <Vhs>. */
+.vhs-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  animation: vhs-grain 0.5s steps(4) infinite;
+}
+.vhs-band {
+  top: -20%;
+  background: linear-gradient(180deg, transparent, oklch(100% 0 0 / 0.08) 30%, oklch(100% 0 0 / 0.16) 50%, oklch(100% 0 0 / 0.06) 70%, transparent);
+  backdrop-filter: blur(1.5px) hue-rotate(-12deg);
+  animation: vhs-band 7s linear infinite;
+}
+@keyframes vhs-grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-8%, 5%); }
+  50% { transform: translate(6%, -7%); }
+  75% { transform: translate(-4%, -3%); }
+  100% { transform: translate(0, 0); }
+}
+@keyframes vhs-band {
+  0%, 55% { transform: translateY(0); }
+  100% { transform: translateY(900%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vhs-grain, .vhs-band { animation: none; }
+  .vhs-band { display: none; }
+}
+
+/* WEBSITES lit inside Aphrodite's eye bar, flickering like a sign warming up. */
+.eyebar-word {
+  text-shadow: 0 0 0.25em var(--orchid);
+  animation: eyebar 5s steps(1) infinite;
+}
+@keyframes eyebar {
+  0%, 100% { opacity: 1; }
+  91% { opacity: 0.25; }
+  93% { opacity: 1; }
+  95% { opacity: 0.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .eyebar-word { animation: none; }
 }

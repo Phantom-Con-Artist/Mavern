@@ -18,23 +18,23 @@ export type Segment = {
   medium: number;
   /** How the wash that hides a change of scene fades: in at the end, out at the start, or not at all. */
   wash?: "in" | "out";
-  /** Its colour: ink coming out of the statue's eye, sun on the way back to the diorama. */
-  washColour?: "ink" | "sun";
+  /** Its colour: night coming out of the statue's eye, orchid on the way back to the diorama. */
+  washColour?: "night" | "orchid";
 };
 
 const MEDIUMS = 4;
 
 export const SEGMENTS: Segment[] = [
-  { name: "approach", scene: "diorama", ms: 2400, from: "approach", to: "mavern", medium: 0, wash: "out", washColour: "sun" },
+  { name: "approach", scene: "diorama", ms: 2400, from: "approach", to: "mavern", medium: 0, wash: "out", washColour: "orchid" },
   { name: "mavern", scene: "diorama", ms: 1800, from: "mavern", to: "mavern", medium: 0 },
-  { name: "eye", scene: "diorama", ms: 2000, from: "mavern", to: "eye", medium: 0, wash: "in", washColour: "ink" },
-  { name: "glance", scene: "city", ms: 1800, from: "sky", to: "sky", medium: 0, wash: "out", washColour: "ink" },
+  { name: "eye", scene: "diorama", ms: 2000, from: "mavern", to: "eye", medium: 0, wash: "in", washColour: "night" },
+  { name: "glance", scene: "city", ms: 1800, from: "sky", to: "sky", medium: 0, wash: "out", washColour: "night" },
   { name: "dive", scene: "city", ms: 3000, from: "sky", to: "word-0", medium: 0 },
   ...Array.from({ length: MEDIUMS }, (_, k) => [
     ...(k > 0 ? [{ name: `move-${k}`, scene: "city" as const, ms: 2200, from: `word-${k - 1}` as PoseName, to: `word-${k}` as PoseName, medium: k }] : []),
     { name: `hold-${k}`, scene: "city" as const, ms: 2000, from: `word-${k}` as PoseName, to: `word-${k}` as PoseName, medium: k },
   ]).flat(),
-  { name: "rise", scene: "city", ms: 2200, from: `word-${MEDIUMS - 1}`, to: "aerial", medium: MEDIUMS - 1, wash: "in", washColour: "sun" },
+  { name: "rise", scene: "city", ms: 2200, from: `word-${MEDIUMS - 1}`, to: "aerial", medium: MEDIUMS - 1, wash: "in", washColour: "orchid" },
 ];
 
 export type LoopState = { segment: number; t: number };
@@ -59,11 +59,11 @@ export function easeInOut(p: number): number {
   return p < 0.5 ? 8 * p ** 4 : 1 - (-2 * p + 2) ** 4 / 2;
 }
 
-export type Pose = { scene: SceneName; from: PoseName; to: PoseName; t: number; wash: number; washColour: "ink" | "sun"; medium: number };
+export type Pose = { scene: SceneName; from: PoseName; to: PoseName; t: number; wash: number; washColour: "night" | "orchid"; medium: number };
 
 export function pose(s: LoopState): Pose {
   const seg = SEGMENTS[s.segment];
   const p = Math.min(s.t / seg.ms, 1);
   const wash = seg.wash === "in" ? Math.max(0, 1 + (p - 1) / WASH_SHARE) : seg.wash === "out" ? Math.max(0, 1 - p / WASH_SHARE) : 0;
-  return { scene: seg.scene, from: seg.from, to: seg.to, t: seg.from === seg.to ? 0 : easeInOut(p), wash, washColour: seg.washColour ?? "sun", medium: seg.medium };
+  return { scene: seg.scene, from: seg.from, to: seg.to, t: seg.from === seg.to ? 0 : easeInOut(p), wash, washColour: seg.washColour ?? "orchid", medium: seg.medium };
 }

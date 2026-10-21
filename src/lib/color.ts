@@ -1,21 +1,26 @@
-export type Ground = "sun" | "ultraviolet" | "vermilion" | "marble" | "ink";
+export type Ground = "night" | "violet" | "orchid" | "gold" | "ember" | "marble";
 
-/** Each ground and the ink set on it. Values must match src/styles/tokens.css (a test checks). */
+/**
+ * The dusk palette, taken from the statue artwork: each ground and the ink set on it.
+ * Values must match src/styles/tokens.css (a test checks).
+ */
 export const grounds: Record<Ground, { value: string; ink: Ground }> = {
-  sun: { value: "oklch(91% 0.17 100)", ink: "ultraviolet" },
-  ultraviolet: { value: "oklch(42% 0.24 295)", ink: "sun" },
-  vermilion: { value: "oklch(64% 0.22 32)", ink: "ink" },
-  marble: { value: "oklch(96% 0.015 85)", ink: "ink" },
-  ink: { value: "oklch(20% 0.05 295)", ink: "marble" },
+  night: { value: "oklch(17% 0.07 300)", ink: "marble" },
+  violet: { value: "oklch(45% 0.24 300)", ink: "marble" },
+  orchid: { value: "oklch(72% 0.2 340)", ink: "night" },
+  gold: { value: "oklch(86% 0.16 85)", ink: "night" },
+  ember: { value: "oklch(62% 0.22 30)", ink: "night" },
+  marble: { value: "oklch(96% 0.015 85)", ink: "night" },
 };
 
 // Written out in full so Tailwind finds the class names when it scans the source.
 const groundClasses: Record<Ground, string> = {
-  sun: "bg-sun text-ultraviolet",
-  ultraviolet: "bg-ultraviolet text-sun",
-  vermilion: "bg-vermilion text-ink",
-  marble: "bg-marble text-ink",
-  ink: "bg-ink text-marble",
+  night: "bg-night text-marble",
+  violet: "bg-violet text-marble",
+  orchid: "bg-orchid text-night",
+  gold: "bg-gold text-night",
+  ember: "bg-ember text-night",
+  marble: "bg-marble text-night",
 };
 
 export function groundClass(g: Ground): string {

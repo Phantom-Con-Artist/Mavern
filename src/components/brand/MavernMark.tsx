@@ -1,20 +1,19 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The current Mavern mark (assets/mavern-logo.png, trimmed, unchanged in shape).
- * Drawn as a mask so it takes the theme's ink colour; set the width with className.
+ * The Mavern mark, traced from assets/mavern-logo.png with its shape unchanged.
+ * It takes the current text colour; set the size with className.
  */
 export function MavernMark({ className, label }: { className?: string; label?: string }) {
   return (
-    <span
+    <svg
+      viewBox="0 0 803 665"
       role={label ? "img" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}
-      className={cn("inline-block aspect-[803/665] bg-current", className)}
-      style={{
-        mask: "url(/brand/mavern-mark.png) center / contain no-repeat",
-        WebkitMask: "url(/brand/mavern-mark.png) center / contain no-repeat",
-      }}
-    />
+      className={cn("inline-block aspect-[803/665] fill-current", className)}
+    >
+      <path transform="translate(0 665) scale(0.1 -0.1)" d="M7834 6487 c-129 -105 -395 -319 -640 -517 -387 -312 -760 -616 -1184 -965 -134 -110 -274 -225 -311 -255 -37 -30 -132 -108 -211 -173 -79 -65 -186 -154 -238 -197 -131 -107 -341 -280 -425 -350 -197 -164 -562 -465 -799 -659 -50 -41 -117 -96 -148 -123 -106 -90 -199 -147 -283 -174 -186 -59 -384 -17 -538 113 -77 64 -368 314 -456 391 -166 144 -261 227 -415 359 -155 134 -200 172 -541 468 -114 99 -276 239 -360 310 -83 72 -198 171 -255 220 -56 50 -122 106 -145 125 -24 19 -123 104 -221 189 -99 84 -235 201 -303 260 -69 58 -158 135 -199 169 -40 35 -75 62 -78 60 -2 -3 -3 -1162 -2 -2576 l3 -2572 145 107 c80 59 321 238 535 398 215 160 414 308 442 328 l53 38 2 1257 c3 1254 3 1257 24 1303 68 147 218 203 359 135 76 -38 100 -71 225 -316 61 -118 146 -285 191 -370 44 -85 141 -274 216 -420 75 -146 206 -402 292 -570 86 -168 165 -324 175 -347 11 -24 42 -65 71 -92 88 -84 167 -90 296 -26 117 60 523 312 698 435 35 25 87 61 116 80 89 60 326 245 412 322 140 124 254 268 498 628 212 312 299 416 503 602 193 176 747 660 942 823 46 39 111 95 145 125 132 119 345 295 357 295 7 0 16 -18 20 -40 4 -22 7 -984 7 -2137 l1 -2097 151 -128 c84 -70 166 -139 183 -152 17 -14 54 -45 81 -70 86 -78 706 -606 716 -609 5 -2 9 1299 9 3237 0 1783 -3 3241 -7 3240 -5 0 -53 -37 -109 -82z M6449 4647 c-14 -12 -72 -60 -128 -107 -57 -47 -138 -114 -180 -150 -43 -36 -133 -110 -201 -165 -68 -55 -142 -116 -164 -136 -23 -19 -120 -100 -216 -179 -96 -79 -215 -177 -265 -218 -272 -224 -306 -256 -342 -326 -81 -159 -50 -330 90 -484 76 -84 237 -266 343 -387 44 -49 108 -121 144 -160 36 -39 117 -129 180 -200 167 -188 307 -344 354 -395 23 -25 97 -108 166 -185 68 -77 152 -171 187 -209 l63 -68 0 1696 c0 933 -1 1696 -2 1696 -2 0 -15 -11 -29 -23z" />
+    </svg>
   );
 }

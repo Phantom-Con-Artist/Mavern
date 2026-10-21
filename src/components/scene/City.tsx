@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { acceleratedRaycast, computeBoundsTree } from "three-mesh-bvh";
 import { sliceWordOnto } from "./anamorph";
+import type { Ground } from "@/lib/color";
 import { linear } from "./colour";
 import { fragmentMesh } from "./Diorama";
 import { wordTexture } from "./textures";
@@ -26,10 +27,10 @@ export const cityViews: Record<string, Viewpoint> = {
   aerial: cam("CAM_06_Aerial"),
 };
 
-const WORDS: { word: string; colour: "sun" | "vermilion" | "marble" }[] = [
-  { word: "SOFTWARE", colour: "sun" },
-  { word: "WEBSITES", colour: "vermilion" },
-  { word: "APPS", colour: "sun" },
+const WORDS: { word: string; colour: Ground }[] = [
+  { word: "SOFTWARE", colour: "gold" },
+  { word: "WEBSITES", colour: "orchid" },
+  { word: "APPS", colour: "ember" },
   { word: "EXPERIMENTS", colour: "marble" },
 ];
 const WORD_DISTANCE = 6;
@@ -90,7 +91,7 @@ export function City({ assets, visible, aspect }: { assets: CityAssets; visible:
         m.emissiveIntensity = bright ? 0.22 : Math.max(m.emissiveIntensity, 2.2);
         if (bright) {
           m.color.setScalar(0.04);
-          m.emissive.lerp(linear("ultraviolet"), 0.55);
+          m.emissive.lerp(linear("violet"), 0.55);
         }
       }
     });
@@ -143,8 +144,8 @@ export function City({ assets, visible, aspect }: { assets: CityAssets; visible:
 
   return (
     <group visible={visible}>
-      <ambientLight intensity={0.35} color={linear("ultraviolet")} />
-      <hemisphereLight args={[linear("ultraviolet"), linear("ink"), 0.6]} />
+      <ambientLight intensity={0.35} color={linear("violet")} />
+      <hemisphereLight args={[linear("violet"), linear("night"), 0.6]} />
       <primitive object={assets.scene} />
       {words.flatMap((w, k) => w.meshes.map((m, i) => <primitive key={`${k}-${i}`} object={m} />))}
     </group>

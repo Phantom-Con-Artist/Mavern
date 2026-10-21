@@ -20,5 +20,6 @@ export const volpi: Work = {
     { label: "Download the beta", href: "https://github.com/Phantom-Con-Artist/Volpi-Releases/releases/latest", confirmed: true },
   ],
   featured: true,
+  screenshot: true,
   source: "Volpi Website README; Volpi-Releases README; mavern-site About copy",
 };

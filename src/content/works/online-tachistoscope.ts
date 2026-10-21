@@ -15,7 +15,9 @@ export const onlineTachistoscope: Work = {
   version: "0.6.0",
   stack: ["React 19", "Vite", "Tailwind CSS", "Supabase"],
   links: [
+    { label: "Try the instrument", href: "https://online-tachistoscope.pages.dev", confirmed: true },
     { label: "Source on GitHub", href: "https://github.com/Phantom-Con-Artist/Online-Tachistoscope", confirmed: false },
   ],
+  screenshot: true,
   source: "WebApp README",
 };

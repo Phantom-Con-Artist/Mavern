@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { DEPTH_RANGE, fragmentCorners, referenceCorners, sliceWord, sliceWordOnto } from "@/components/hero/anamorph";
-import type { Viewpoint } from "@/components/hero/views";
+import { DEPTH_RANGE, fragmentCorners, referenceCorners, sliceWord, sliceWordOnto } from "@/components/scene/anamorph";
+import type { Viewpoint } from "@/components/scene/views";
 
 const view: Viewpoint = { eye: [2, 1.2, 4], target: [0, 0.6, 0], fov: 32 };
 const layout = { distance: 3, width: 2.4, height: 0.5 };

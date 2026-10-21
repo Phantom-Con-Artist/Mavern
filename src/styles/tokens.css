@@ -1,13 +1,18 @@
 /*
-  Mavern tokens. Grounds come from the statue artwork; each ground has one ink (src/lib/color.ts keeps the
-  pairs and tests their contrast). Components use these names only, never raw colours.
+  Mavern tokens: the dusk palette from the statue artwork. Each ground has one ink (src/lib/color.ts keeps
+  the pairs and tests their contrast). Components use these names only, never raw colours.
 */
 :root {
-  --sun: oklch(91% 0.17 100);
-  --ultraviolet: oklch(42% 0.24 295);
-  --vermilion: oklch(64% 0.22 32);
+  --night: oklch(17% 0.07 300);
+  --violet: oklch(45% 0.24 300);
+  --orchid: oklch(72% 0.2 340);
+  --gold: oklch(86% 0.16 85);
+  --ember: oklch(62% 0.22 30);
   --marble: oklch(96% 0.015 85);
-  --ink: oklch(20% 0.05 295);
+
+  /* The artwork's sunset, top to bottom: violet sky, orchid haze, ember sea, gold sun. */
+  --sunset: linear-gradient(180deg, var(--violet) 0%, var(--orchid) 38%, var(--ember) 68%, var(--gold) 100%);
+  --sunset-text: linear-gradient(180deg, var(--gold) 12%, var(--orchid) 58%, var(--ember) 96%);
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);

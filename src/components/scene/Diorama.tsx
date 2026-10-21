@@ -34,7 +34,7 @@ export async function loadDiorama(loader: { loadAsync: (url: string) => Promise<
     Promise.all(
       featuredWorks()
         .slice(0, 3)
-        .map((w) => cardTexture(w.name, w.summary, { card: grounds.vermilion.value, ink: grounds.ink.value })),
+        .map((w) => cardTexture(w.name, w.summary, { card: grounds.orchid.value, ink: grounds.night.value })),
     ),
   ]);
   return { scene: gltf.scene, word, cards };
@@ -46,7 +46,7 @@ const CARD_SPOTS: [number, number, number, number][] = [
   [-0.55, 1.55, 1.6, 0.2],
 ];
 
-/** The clay diorama in daylight: the bust in its arch, columns and steps, the sliced MAVERN, and three work cards. */
+/** The clay diorama at dusk: the bust in its arch, columns and steps, the sliced MAVERN, and three work cards. */
 export function Diorama({ assets, visible }: { assets: DioramaAssets; visible: boolean }) {
   const clay = useMemo(() => new THREE.MeshStandardMaterial({ color: linear("marble"), roughness: 0.82 }), []);
 
@@ -60,7 +60,7 @@ export function Diorama({ assets, visible }: { assets: DioramaAssets; visible: b
   }, [assets.scene, clay]);
 
   const word = useMemo(() => {
-    const material = new THREE.MeshBasicMaterial({ map: assets.word.texture, color: linear("ultraviolet"), transparent: true, side: THREE.DoubleSide, depthWrite: false });
+    const material = new THREE.MeshBasicMaterial({ map: assets.word.texture, color: linear("night"), transparent: true, side: THREE.DoubleSide, depthWrite: false });
     const layout = { distance: 3.1, width: 2.5, height: 2.5 / assets.word.aspect };
     const meshes = sliceWord(MAVERN_VIEW, layout, { cols: 7, rows: 3 }, 21).map((f) => fragmentMesh(f, material));
     return { material, meshes };
@@ -98,10 +98,11 @@ export function Diorama({ assets, visible }: { assets: DioramaAssets; visible: b
 
   return (
     <group visible={visible}>
-      <hemisphereLight args={[linear("marble"), linear("sun"), 1.3]} />
+      <hemisphereLight args={[linear("orchid"), linear("ember"), 1.1]} />
       <directionalLight
         position={[4.5, 4.2, 3.2]}
-        intensity={2.4}
+        intensity={2.6}
+        color={linear("gold")}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-4}
@@ -112,7 +113,7 @@ export function Diorama({ assets, visible }: { assets: DioramaAssets; visible: b
       />
       <mesh rotation-x={-Math.PI / 2} receiveShadow>
         <planeGeometry args={[30, 30]} />
-        <shadowMaterial opacity={0.34} color={linear("ultraviolet")} />
+        <shadowMaterial opacity={0.4} color={linear("night")} />
       </mesh>
       <primitive object={assets.scene} />
       {word.meshes.map((m, i) => (

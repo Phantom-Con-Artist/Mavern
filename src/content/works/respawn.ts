@@ -11,10 +11,12 @@ export const respawn: Work = {
     "It is a static site with small Cloudflare functions in front of the game data, so there is no server to run.",
     "It has light and dark themes with three accent colours: Ice, Ember and Acid.",
   ],
-  status: "in-development",
+  status: "live",
   stack: ["Next.js 16", "React 19", "Tailwind CSS 4", "Cloudflare Pages Functions"],
   links: [
+    { label: "Visit Respawn", href: "https://respawn.mavern.in", confirmed: true },
     { label: "Source on GitHub", href: "https://github.com/Phantom-Con-Artist/respawn", confirmed: false },
   ],
+  screenshot: true,
   source: "gamer-website README",
 };

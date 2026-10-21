@@ -1,3 +1,5 @@
+import type { Ground } from "@/lib/color";
+
 export type NavItem = { id: "work" | "about" | "contact"; label: string; href: string };
 
 /** A link that is planned but not live yet has href: null and renders as plain text. */
@@ -27,14 +29,24 @@ export type Work = {
   links: WorkLink[];
   /** Shown on the home page. */
   featured?: boolean;
+  /** A screenshot of the live work, built by scripts/build-images.mjs as screen-<slug>. */
+  screenshot?: boolean;
   /** Where the facts came from, for review before publishing. */
   source: string;
 };
 
+/** The statue artworks in assets/, published under public/media by scripts/build-images.mjs. */
+export type Figure = "athena" | "aphrodite" | "alexander" | "creation";
+
 export type MediumInfo = {
   slug: Medium;
   label: string;
-  /** The word the hero sculpture spells from the side. */
+  /** The word the city spells for this medium. */
   word: string;
   description: string;
+  /** The figure that stands for this medium, and the palette ground of its pages. */
+  figure: Figure;
+  ground: Ground;
+  /** One line for the home page's gallery chapter. */
+  line: string;
 };

@@ -12,7 +12,7 @@ import { lerpView, type Viewpoint } from "./views";
 
 type Props = {
   running: boolean;
-  /** The sun-coloured layer over the canvas that hides each change of scene. */
+  /** The layer over the canvas that hides each change of scene. */
   wash: RefObject<HTMLDivElement | null>;
   onMedium: (index: number) => void;
   onFail: () => void;
@@ -21,7 +21,7 @@ type Props = {
 type Assets = { diorama: DioramaAssets; city: CityAssets };
 
 const views: Record<PoseName, Viewpoint> = { ...dioramaViews, ...cityViews } as Record<PoseName, Viewpoint>;
-const night = linear("ink").multiplyScalar(0.5);
+const night = linear("night").multiplyScalar(0.7);
 
 function Director({ assets, running, wash, onMedium }: { assets: Assets } & Omit<Props, "onFail">) {
   const { camera, scene, size } = useThree();
@@ -79,7 +79,7 @@ function Director({ assets, running, wash, onMedium }: { assets: Assets } & Omit
 }
 
 /** The hero: the clay diorama where MAVERN locks in, then through the small arch into the night city. */
-export default function HeroScene({ running, wash, onMedium, onFail }: Props) {
+export default function LiveScene({ running, wash, onMedium, onFail }: Props) {
   const [assets, setAssets] = useState<Assets | null>(null);
   // Held in a ref so a new callback from the parent does not reload the assets.
   const fail = useRef(onFail);
