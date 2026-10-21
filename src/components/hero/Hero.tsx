@@ -7,7 +7,7 @@ import { mediums } from "@/content/mediums";
 import { usePageActive } from "@/hooks/usePageActive";
 import { HeroFallback } from "./HeroFallback";
 
-const Sculpture = dynamic(() => import("./Sculpture"), { ssr: false });
+const HeadCityScene = dynamic(() => import("./HeadCityScene"), { ssr: false });
 const words = mediums.map((m) => m.word);
 
 function canAnimate(): boolean {
@@ -46,11 +46,11 @@ export function Hero() {
     <section aria-labelledby="hero-title" className="bg-ultraviolet text-sun">
       <div
         ref={stage}
-        className="relative aspect-[2/1] max-h-[70svh] w-full sm:aspect-[3/1]"
+        className="relative aspect-[4/5] max-h-[78svh] w-full sm:aspect-[16/9]"
         aria-hidden="true"
       >
         {showScene ? (
-          <Sculpture words={words} running={active && !paused} onWord={setWord} onFail={() => setFailed(true)} />
+          <HeadCityScene words={words} running={active && !paused} onWord={setWord} onFail={() => setFailed(true)} />
         ) : (
           <HeroFallback className="absolute inset-0 m-auto h-full w-full" />
         )}
@@ -83,7 +83,7 @@ export function Hero() {
                 onClick={() => setPaused((p) => !p)}
                 className="text-[length:var(--step-small)] font-semibold underline underline-offset-4"
               >
-                {paused ? "Play the sculpture" : "Pause the sculpture"}
+                {paused ? "Play the animation" : "Pause the animation"}
               </button>
             )}
           </div>

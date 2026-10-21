@@ -129,19 +129,16 @@ type Work = {
 
 ## 3. Hero and motion
 
-### Sculpture (revised 2026-10-21 at the owner's direction)
+### Hero: typographic diorama (revised again 2026-10-21, from the owner's reference)
 
-The hero is a **classical head made of letters, blocks and shapes**, and **the camera moves** to reveal words.
+A small 3D diorama on a sun ground, after the owner's reference of sliced 3D type among clay shapes and red cards.
 
-- **Model:** Poly Haven "Marble Bust 01" by Rico Cilliers (CC0), kept in `assets/models/marble-bust-01/`.
-- **Bake** (`scripts/build-bust.mjs`, pure functions tested): area-weighted, seeded sampling of ~14,000 surface points with normals and the ambient-occlusion value at each point, quantised to `public/hero/bust.bin`.
-- **Elements:** each point is a letter from Dela Gothic (most points), a small cube (points in occluded hollows: hair, brow, jaw, ears) or a simple shape (triangle, ring, dot). Letters and shapes are instanced quads lying on the surface, drawn from a glyph atlas built at runtime from the loaded font. Cubes are instanced boxes. Base colour marble, dimmed by occlusion; cubes vermilion; lit elements sun.
-- **Head word:** one camera viewpoint around the head for MAVERN. A point is lit when, seen from that viewpoint, it faces the camera and projects inside MAVERN's rasterised outline, so only from there do the lit points read as the word.
-- **City** (`city.ts`, pure, tested): a top-down cyberpunk city whose built-up blocks spell the current medium word. The word's 5 × 7 block bitmap (`pixelFont.ts`) is the street plan: each lit pixel is a city block, gaps are streets. Every element has a city target: cubes become towers of varied height on the lit blocks, letters become rooftop signs on them, shapes become traffic along the streets. From directly above, the built-up blocks spell the word; the horizon grid becomes the street grid.
-- **Morph** (transformer-like, on the GPU): each element stores its head pose and its city pose; a shader blends them with a per-element delay (crown first, then down the head) and a half spin in flight; cubes stretch into towers.
-- **Loop** (one self-running cycle per medium, the head itself never moves on its own): head at three-quarters → camera flies to the MAVERN viewpoint, MAVERN lights → elements morph into the city while the camera rises to a top-down view → hold the city spelling the medium → city folds back into the head → next medium.
-- **Text sync:** the line under the canvas names the current medium (FlipWord) and links to `/work/<medium>/`.
-- **Blender:** not used at runtime (the morph needs one shared set of elements). Optional for rendering the poster when the Blender MCP is connected.
+- **Sliced words** (`anamorph.ts`, pure, tested): MAVERN, SOFTWARE, WEBSITES, APPS, EXPERIMENTS, each drawn in Dela Gothic (ultraviolet) on a texture, cut into fragments, and each fragment pushed to its own depth along the rays from that word's viewpoint and scaled to match. From its viewpoint a word reads flat and whole; from anywhere else its fragments drift apart and double, as in the reference.
+- **Clay objects:** marble-white matte shapes with soft shadows: Roman arches, fluted columns, spheres, steps, and the CC0 marble bust (Poly Haven, Rico Cilliers) as a clay sculpture.
+- **Cards:** curved vermilion cards carrying real one-line descriptions of featured works in ink.
+- **Camera:** the scene never moves; the camera travels between the five viewpoints on an eased arc and holds at each until its word locks in. Loop: MAVERN → SOFTWARE → WEBSITES → APPS → EXPERIMENTS → back.
+- **Text sync:** the line under the canvas names the medium the camera is heading to or holding (FlipWord), linked to `/work/<medium>/`.
+- **Lighting:** hemisphere light plus one directional light with soft shadow maps; clay casts shadows on the ground.
 
 ### Accessibility and performance
 
@@ -182,7 +179,7 @@ app/                     layout.tsx, page.tsx, not-found.tsx, sitemap.ts, robots
                          opengraph-image.tsx, work/page.tsx, work/[medium]/page.tsx,
                          work/[medium]/[project]/page.tsx
 src/content/             site.ts, mediums.ts, works/*.ts, works/index.ts, types.ts
-src/components/hero/     bust.ts (decode), pixelFont.ts, city.ts, words.ts (viewpoint, lit set), loop.ts, atlas.ts, HeadCityScene.tsx, HeroFallback.tsx, Hero.tsx
+src/components/hero/     views.ts (viewpoints), anamorph.ts, loop.ts, textures.ts, objects.ts, DioramaScene.tsx, HeroFallback.tsx, Hero.tsx
 src/components/kinetic/  SplitText, FlipWord, VelocityMarquee, TrackingScrub, WeightHover
 src/components/motion/   BarReveal, SectionGround, Parallax, ContactZoom
 src/components/layout/   Header, Footer
@@ -220,9 +217,8 @@ Vite entries (`index.html`, `software/index.html`, `src/entries`, `src/lib/mount
 ## 5. Testing
 
 Unit (Vitest):
-- Bust bake: deterministic, exact point count, every point on a mesh triangle, normals unit length, occlusion in [0,1].
-- Words: a point is lit only if it faces the viewpoint and projects inside the word mask; MAVERN lights enough points to read (≥ 300).
-- City: seen from above, the occupied blocks equal the word bitmap; every element gets exactly one city target; towers stand only on lit blocks; traffic only on streets.
+- Anamorph: every fragment's corners project from its word's viewpoint to exactly where the flat word's corners would; from another viewpoint they do not; depths stay within bounds.
+- Loop: phases in order, camera holds exactly on a viewpoint during holds, wraps after the last word.
 - Content: unique slugs, valid mediums, unconfirmed links filtered out, every work has a summary under 160 characters.
 - Colour tokens: each allowed pairing ≥ 4.5:1 (body) or ≥ 3:1 (large).
 - Sitemap contains every route.
