@@ -129,18 +129,21 @@ type Work = {
 
 ## 3. Hero and motion
 
-### Sculpture
+### Sculpture (revised 2026-10-21 at the owner's direction)
 
-- **Pixel font** (`pixelFont.ts`): 5×7 glyphs for the letters in MAVERN and the medium words.
-- **Placement** (`sculpture.ts`, pure functions): for each row `y`, let `F` be the lit columns of MAVERN and `S` the lit columns of the medium word. Place `max(|F|,|S|)` cubes pairing every `x` in `F` with a `z` in `S` (cycling the shorter list), so the front projection is exactly MAVERN and the side projection is exactly the word. Each row's cube count is the maximum across all words; extra cubes duplicate an existing position. Result: a fixed pool of cubes whose `x` and `y` never change, only `z` per word.
-- **Rendering** (`Sculpture.tsx`): React Three Fiber, one `InstancedMesh`, orthographic camera. Face colours: front sun, sides vermilion, top ultraviolet. Horizon grid floor as a small shader.
-- **Loop** (~7 s per medium): hold MAVERN flat → turn 90° with a slight mid-turn tilt → hold the medium → turn back → while facing front, tween each cube's `z` to the next word → repeat.
-- **Text sync**: a line under the canvas names the current medium (FlipWord) and links to `/work/<medium>/`.
+The hero is a **classical head made of letters, blocks and shapes**, and **the camera moves** to reveal words.
+
+- **Model:** Poly Haven "Marble Bust 01" by Rico Cilliers (CC0), kept in `assets/models/marble-bust-01/`.
+- **Bake** (`scripts/build-bust.mjs`, pure functions tested): area-weighted, seeded sampling of ~14,000 surface points with normals and the ambient-occlusion value at each point, quantised to `public/hero/bust.bin`.
+- **Elements:** each point is a letter from Dela Gothic (most points), a small cube (points in occluded hollows: hair, brow, jaw, ears) or a simple shape (triangle, ring, dot). Letters and shapes are instanced quads lying on the surface, drawn from a glyph atlas built at runtime from the loaded font. Cubes are instanced boxes. Base colour marble, dimmed by occlusion; cubes vermilion; lit elements sun.
+- **Words:** for each word (MAVERN, SOFTWARE, WEBSITES, APPS, EXPERIMENTS) a camera viewpoint around the head. A point is lit for that word when, seen from that viewpoint, it faces the camera and projects inside the word's rasterised outline. Only from that viewpoint do the lit points read as the word.
+- **Loop:** start on a three-quarter view of the head alone; fly (eased arc) to the MAVERN viewpoint, light it, hold, dim, fly to the next medium, and so on. The head never moves; only the camera does.
+- **Text sync:** the line under the canvas names the current medium (FlipWord) and links to `/work/<medium>/`.
 
 ### Accessibility and performance
 
 - `<h1>` is real text: "Mavern: software, websites, apps and experiments by Subhradeep Sarkar". Canvas is `aria-hidden`.
-- `HeroFallback.tsx` (static SVG of flat MAVERN) renders first; the WebGL scene loads with a dynamic import after hydration and replaces it. No WebGL or reduced motion keeps the fallback.
+- `HeroFallback.tsx` (a still poster of the head with MAVERN lit, `public/hero/poster.*`) renders first; the WebGL scene loads with a dynamic import after hydration and replaces it. No WebGL or reduced motion keeps the fallback.
 - Pauses offscreen (IntersectionObserver) and in hidden tabs. Visible pause/play button.
 
 ### Motion list
@@ -176,7 +179,7 @@ app/                     layout.tsx, page.tsx, not-found.tsx, sitemap.ts, robots
                          opengraph-image.tsx, work/page.tsx, work/[medium]/page.tsx,
                          work/[medium]/[project]/page.tsx
 src/content/             site.ts, mediums.ts, works/*.ts, works/index.ts, types.ts
-src/components/hero/     pixelFont.ts, sculpture.ts, Sculpture.tsx, HeroFallback.tsx, Hero.tsx
+src/components/hero/     bust.ts (decode), words.ts (viewpoints, lit sets), loop.ts, atlas.ts, BustScene.tsx, HeroFallback.tsx, Hero.tsx
 src/components/kinetic/  SplitText, FlipWord, VelocityMarquee, TrackingScrub, WeightHover
 src/components/motion/   BarReveal, SectionGround, Parallax, ContactZoom
 src/components/layout/   Header, Footer
@@ -214,8 +217,8 @@ Vite entries (`index.html`, `software/index.html`, `src/entries`, `src/lib/mount
 ## 5. Testing
 
 Unit (Vitest):
-- Sculpture: for every medium word, front projection of the cube pool equals MAVERN's bitmap and side projection equals the word's bitmap; `x`,`y` are identical across words.
-- Pixel font has every needed glyph.
+- Bust bake: deterministic, exact point count, every point on a mesh triangle, normals unit length, occlusion in [0,1].
+- Words: a point is lit only if it faces the viewpoint and projects inside the word mask; each word lights enough points to read (≥ 300).
 - Content: unique slugs, valid mediums, unconfirmed links filtered out, every work has a summary under 160 characters.
 - Colour tokens: each allowed pairing ≥ 4.5:1 (body) or ≥ 3:1 (large).
 - Sitemap contains every route.
