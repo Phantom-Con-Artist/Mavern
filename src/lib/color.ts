@@ -29,7 +29,7 @@ function parseOklch(value: string): [number, number, number] {
 }
 
 /** oklch → linear sRGB, clamped to the displayable range. */
-function toLinearRgb(value: string): [number, number, number] {
+export function toLinearRgb(value: string): [number, number, number] {
   const [L, C, h] = parseOklch(value);
   const a = C * Math.cos((h * Math.PI) / 180);
   const b = C * Math.sin((h * Math.PI) / 180);

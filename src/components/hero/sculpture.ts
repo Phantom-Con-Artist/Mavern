@@ -42,3 +42,13 @@ export function buildSculpture(front: string, words: string[]): Sculpture {
 
   return { cubes, depths, frontWidth: frontRows[0].length, sideWidths: sideRows.map((r) => r[0].length) };
 }
+
+/** Centre of cube i while morphing from side word `from` to `to`: x right, y up, z towards the viewer. */
+export function cubePosition(s: Sculpture, i: number, from: number, to: number, morph: number): [number, number, number] {
+  const lerp = (a: number, b: number) => a + (b - a) * morph;
+  const sideWidth = lerp(s.sideWidths[from], s.sideWidths[to]);
+  const depth = lerp(s.depths[from][i], s.depths[to][i]);
+  const rows = Math.max(...s.cubes.map((c) => c.y)) + 1;
+  const { x, y } = s.cubes[i];
+  return [x - (s.frontWidth - 1) / 2, (rows - 1) / 2 - y, depth - (sideWidth - 1) / 2];
+}

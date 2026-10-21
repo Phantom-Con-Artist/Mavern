@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { GAP, GLYPH_H, GLYPH_W, bitmap } from "@/components/hero/pixelFont";
-import { buildSculpture } from "@/components/hero/sculpture";
+import { buildSculpture, cubePosition } from "@/components/hero/sculpture";
 import { mediums } from "@/content/mediums";
 
 const words = mediums.map((m) => m.word);
@@ -51,5 +51,32 @@ describe("sculpture", () => {
   it("reports the widths", () => {
     expect(s.frontWidth).toBe(bitmap("MAVERN")[0].length);
     expect(s.sideWidths).toEqual(words.map((w) => bitmap(w)[0].length));
+  });
+});
+
+describe("cube positions", () => {
+  const s = buildSculpture("MAVERN", ["APPS"]);
+
+  /** Where a position lands on screen after the sculpture turns by yaw about the vertical axis (three.js convention). */
+  const screenX = ([x, , z]: [number, number, number], yaw: number) => x * Math.cos(yaw) + z * Math.sin(yaw);
+
+  it("reads left to right from the side after a quarter turn", () => {
+    const order = s.cubes.map((_, i) => i).sort((a, b) => s.depths[0][a] - s.depths[0][b]);
+    const first = order[0];
+    const last = order[order.length - 1];
+    const turned = (i: number) => screenX(cubePosition(s, i, 0, 0, 0), Math.PI / 2);
+    expect(turned(last)).toBeGreaterThan(turned(first));
+  });
+
+  it("reads left to right from the front", () => {
+    const xs = s.cubes.map((_, i) => cubePosition(s, i, 0, 0, 0)[0]);
+    const leftmost = s.cubes.findIndex((c) => c.x === 0);
+    expect(xs[leftmost]).toBe(Math.min(...xs));
+  });
+
+  it("puts row 0 at the top", () => {
+    const top = s.cubes.findIndex((c) => c.y === 0);
+    const bottom = s.cubes.findIndex((c) => c.y === 6);
+    expect(cubePosition(s, top, 0, 0, 0)[1]).toBeGreaterThan(cubePosition(s, bottom, 0, 0, 0)[1]);
   });
 });

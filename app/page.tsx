@@ -1,3 +1,9 @@
+import { Hero } from "@/components/hero/Hero";
+
 export default function HomePage() {
-  return <h1>Mavern</h1>;
+  return (
+    <main id="main">
+      <Hero />
+    </main>
+  );
 }
