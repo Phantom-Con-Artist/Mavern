@@ -89,18 +89,24 @@
   }
 
   /*
-    Buttons: the jagged box from the Volpi site (a slanted face, an ink outline and an offset slab),
-    in Mavern's green instead of Volpi's seal red. Only clip-path and transforms.
+    Buttons: hand-drawn in Krita (Krita Assets/Rendered/button). The six drawings are cropped to one box
+    and joined side by side in assets/button-fill.webp (the offset slab) and assets/button-line.webp (the ink
+    outline). Both are masks, so slab and outline take the theme's colours; the face sits between them.
+    Still on the first drawing; on hover or focus it cycles the six, and the ring from Rendered/button-hover
+    is drawn around it. Timing follows the Krita timeline: 12 frames at 24 fps played at 60% speed,
+    each drawing held for two frames.
   */
   .btn {
     --btn-slab: var(--accent);
     --btn-face: var(--panel);
     --btn-text: var(--ink);
-    --btn-shape: polygon(0 7%, 100% 0, 97% 100%, 2% 91%);
-    --btn-inner: polygon(3px calc(7% + 3px), calc(100% - 3px) 3px, calc(97% - 3px) calc(100% - 3px), calc(2% + 3px) calc(91% - 3px));
+    --btn-loop: calc(12s / (24 * 0.6));
     position: relative;
     isolation: isolate;
     display: inline-flex;
+    min-width: 8.5rem;
+    /* Room for the drawn outline and slab, which are thicker on the right and bottom. */
+    padding: 0.5em 0.5em 0.72em 0.45em;
     color: var(--btn-text);
     font-size: 0.9375rem;
     font-weight: 700;
@@ -109,48 +115,90 @@
     transition: transform 0.15s ease;
   }
 
-  .btn:nth-of-type(even) {
-    --btn-shape: polygon(2% 0, 98% 8%, 100% 94%, 0 100%);
-    --btn-inner: polygon(calc(2% + 3px) 3px, calc(98% - 3px) calc(8% + 3px), calc(100% - 3px) calc(94% - 3px), 3px calc(100% - 3px));
-  }
-
   .btn::before,
   .btn::after {
     content: "";
     position: absolute;
     inset: 0;
-    z-index: -1;
-    clip-path: var(--btn-shape);
+    pointer-events: none;
+    mask-repeat: no-repeat;
+    mask-size: 600% 100%;
+    mask-position: 0 0;
   }
 
   .btn::before {
+    z-index: -1;
     background: var(--btn-slab);
-    transform: translate(6px, 6px) rotate(-1.2deg);
-    transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1);
+    mask-image: url("../assets/button-fill.webp");
+    transition: background-color 0.15s ease;
   }
 
+  /* Over the face, so the drawn outline is never covered by it. */
   .btn::after {
+    z-index: 1;
     background: var(--line);
+    mask-image: url("../assets/button-line.webp");
   }
 
+  /* The face sits inside the drawn outline. */
   .btn-in {
     display: inline-flex;
+    flex: 1;
     align-items: center;
+    justify-content: center;
     gap: 0.5em;
-    padding: 1em 1.7em 1.05em;
+    padding: 0.7em 1.3em 0.75em;
+    white-space: nowrap;
     background: var(--btn-face);
-    clip-path: var(--btn-inner);
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  .btn:hover::before { transform: translate(9px, 8px) rotate(-3deg); }
-  .btn:hover .btn-in { background: var(--ink); color: var(--paper); }
+  /* The slab goes to ink, so the drawn outline stays readable on the face. */
+  .btn:hover::before { background: var(--ink); }
   .btn:active { transform: translate(2px, 2px) skewX(-4deg); }
   .btn:focus-visible { outline: none; }
-  .btn:focus-visible::before { background: var(--ink-soft); transform: translate(8px, 8px) rotate(-2deg); }
+  .btn:focus-visible::before { background: var(--ink-soft); }
 
   .btn-primary { --btn-face: var(--accent); --btn-text: var(--accent-contrast); --btn-slab: var(--line); }
   .btn-primary:hover::before { background: var(--accent); }
+
+  /*
+    The pen ring: six hand-drawn loops (Rendered/button-hover, 512 x 256 each) joined in
+    assets/button-scribble.webp, used as a mask so the line takes the ink colour. The drawings share the
+    box's canvas, but the ring is drawn off-centre in it, so the offsets below centre the ring's drawn
+    extent (the union of all six loops) on the button instead of keeping the canvas position.
+  */
+  .btn-scribble {
+    position: absolute;
+    inset: -19.7% -15.1% -26.6% -10.7%;
+    z-index: -2;
+    pointer-events: none;
+    background: var(--ink);
+    mask: url("../assets/button-scribble.webp") 0 0 / 600% 100% no-repeat;
+    opacity: 0;
+  }
+
+  .btn:focus-visible .btn-scribble { opacity: 1; }
+
+  @media (hover: hover) {
+    .btn:hover .btn-scribble { opacity: 1; }
+  }
+
+  /* Without reduced motion, the drawings cycle. Otherwise the first one stays, still. */
+  @media (prefers-reduced-motion: no-preference) {
+    .btn:hover::before,
+    .btn:hover::after,
+    .btn:focus-visible::before,
+    .btn:focus-visible::after,
+    .btn:hover .btn-scribble,
+    .btn:focus-visible .btn-scribble {
+      animation: btn-boil var(--btn-loop) steps(6, jump-none) infinite;
+    }
+  }
+
+  @keyframes btn-boil {
+    to { mask-position: 100% 0; }
+  }
 
   /* Plain text action beside a button. */
   .textlink {
