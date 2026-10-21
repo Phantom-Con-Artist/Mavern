@@ -136,7 +136,9 @@ A small 3D diorama on a sun ground, after the owner's reference of sliced 3D typ
 - **Sliced words** (`anamorph.ts`, pure, tested): MAVERN, SOFTWARE, WEBSITES, APPS, EXPERIMENTS, each drawn in Dela Gothic (ultraviolet) on a texture, cut into fragments, and each fragment pushed to its own depth along the rays from that word's viewpoint and scaled to match. From its viewpoint a word reads flat and whole; from anywhere else its fragments drift apart and double, as in the reference.
 - **Clay objects:** marble-white matte shapes with soft shadows: Roman arches, fluted columns, spheres, steps, and the CC0 marble bust (Poly Haven, Rico Cilliers) as a clay sculpture.
 - **Cards:** curved vermilion cards carrying real one-line descriptions of featured works in ink.
-- **Camera:** the scene never moves; the camera travels between the five viewpoints on an eased arc and holds at each until its word locks in. Loop: MAVERN → SOFTWARE → WEBSITES → APPS → EXPERIMENTS → back.
+- **Assets from Blender:** the clay pieces are modelled in Blender (`assets/models/diorama/mavern-diorama.blend`) and exported to `public/hero/diorama.glb` (quantised). 4,000 surface samples of the same meshes are baked to `public/hero/diorama-points.bin`.
+- **Cities and the morph:** the diorama breaks into 4,000 clay blocks at its surface samples (the meshes fade as the blocks appear); the blocks fly in a staggered, spinning wave and stack into a clay city whose blocks spell the first medium when seen from above, with vermilion roofs as accents. City to city, the same blocks restack into the next medium's word. After the last city they reassemble into the diorama.
+- **Camera:** the scene never moves by itself; the camera approaches the diorama from an angle where the sliced MAVERN is in pieces, settles on its viewpoint so the word locks in, then rises over each city (steep, not quite vertical, so towers and shadows show). Loop: diorama (MAVERN) → SOFTWARE → WEBSITES → APPS → EXPERIMENTS → diorama.
 - **Text sync:** the line under the canvas names the medium the camera is heading to or holding (FlipWord), linked to `/work/<medium>/`.
 - **Lighting:** hemisphere light plus one directional light with soft shadow maps; clay casts shadows on the ground.
 
@@ -218,7 +220,9 @@ Vite entries (`index.html`, `software/index.html`, `src/entries`, `src/lib/mount
 
 Unit (Vitest):
 - Anamorph: every fragment's corners project from its word's viewpoint to exactly where the flat word's corners would; from another viewpoint they do not; depths stay within bounds.
-- Loop: phases in order, camera holds exactly on a viewpoint during holds, wraps after the last word.
+- Loop: stages in order (diorama, then each city), holds sit exactly on their viewpoint, moves go to the next stage, wraps to the diorama.
+- City: every block gets one tower tier; towers stand only on the word's blocks; from above the built blocks equal the word bitmap.
+- Points: the baked sample file decodes to the right count with unit normals.
 - Content: unique slugs, valid mediums, unconfirmed links filtered out, every work has a summary under 160 characters.
 - Colour tokens: each allowed pairing ≥ 4.5:1 (body) or ≥ 3:1 (large).
 - Sitemap contains every route.
