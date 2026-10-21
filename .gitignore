@@ -11,3 +11,11 @@ out
 *.tsbuildinfo
 .vscode
 .idea
+.next
+next-env.d.ts
+renders
+public/media
+.superpowers
+.taste-skill
+test-results
+playwright-report
