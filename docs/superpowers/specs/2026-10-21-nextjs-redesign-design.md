@@ -136,9 +136,12 @@ The hero is a **classical head made of letters, blocks and shapes**, and **the c
 - **Model:** Poly Haven "Marble Bust 01" by Rico Cilliers (CC0), kept in `assets/models/marble-bust-01/`.
 - **Bake** (`scripts/build-bust.mjs`, pure functions tested): area-weighted, seeded sampling of ~14,000 surface points with normals and the ambient-occlusion value at each point, quantised to `public/hero/bust.bin`.
 - **Elements:** each point is a letter from Dela Gothic (most points), a small cube (points in occluded hollows: hair, brow, jaw, ears) or a simple shape (triangle, ring, dot). Letters and shapes are instanced quads lying on the surface, drawn from a glyph atlas built at runtime from the loaded font. Cubes are instanced boxes. Base colour marble, dimmed by occlusion; cubes vermilion; lit elements sun.
-- **Words:** for each word (MAVERN, SOFTWARE, WEBSITES, APPS, EXPERIMENTS) a camera viewpoint around the head. A point is lit for that word when, seen from that viewpoint, it faces the camera and projects inside the word's rasterised outline. Only from that viewpoint do the lit points read as the word.
-- **Loop:** start on a three-quarter view of the head alone; fly (eased arc) to the MAVERN viewpoint, light it, hold, dim, fly to the next medium, and so on. The head never moves; only the camera does.
+- **Head word:** one camera viewpoint around the head for MAVERN. A point is lit when, seen from that viewpoint, it faces the camera and projects inside MAVERN's rasterised outline, so only from there do the lit points read as the word.
+- **City** (`city.ts`, pure, tested): a top-down cyberpunk city whose built-up blocks spell the current medium word. The word's 5 × 7 block bitmap (`pixelFont.ts`) is the street plan: each lit pixel is a city block, gaps are streets. Every element has a city target: cubes become towers of varied height on the lit blocks, letters become rooftop signs on them, shapes become traffic along the streets. From directly above, the built-up blocks spell the word; the horizon grid becomes the street grid.
+- **Morph** (transformer-like, on the GPU): each element stores its head pose and its city pose; a shader blends them with a per-element delay (crown first, then down the head) and a half spin in flight; cubes stretch into towers.
+- **Loop** (one self-running cycle per medium, the head itself never moves on its own): head at three-quarters → camera flies to the MAVERN viewpoint, MAVERN lights → elements morph into the city while the camera rises to a top-down view → hold the city spelling the medium → city folds back into the head → next medium.
 - **Text sync:** the line under the canvas names the current medium (FlipWord) and links to `/work/<medium>/`.
+- **Blender:** not used at runtime (the morph needs one shared set of elements). Optional for rendering the poster when the Blender MCP is connected.
 
 ### Accessibility and performance
 
@@ -179,7 +182,7 @@ app/                     layout.tsx, page.tsx, not-found.tsx, sitemap.ts, robots
                          opengraph-image.tsx, work/page.tsx, work/[medium]/page.tsx,
                          work/[medium]/[project]/page.tsx
 src/content/             site.ts, mediums.ts, works/*.ts, works/index.ts, types.ts
-src/components/hero/     bust.ts (decode), words.ts (viewpoints, lit sets), loop.ts, atlas.ts, BustScene.tsx, HeroFallback.tsx, Hero.tsx
+src/components/hero/     bust.ts (decode), pixelFont.ts, city.ts, words.ts (viewpoint, lit set), loop.ts, atlas.ts, HeadCityScene.tsx, HeroFallback.tsx, Hero.tsx
 src/components/kinetic/  SplitText, FlipWord, VelocityMarquee, TrackingScrub, WeightHover
 src/components/motion/   BarReveal, SectionGround, Parallax, ContactZoom
 src/components/layout/   Header, Footer
@@ -218,7 +221,8 @@ Vite entries (`index.html`, `software/index.html`, `src/entries`, `src/lib/mount
 
 Unit (Vitest):
 - Bust bake: deterministic, exact point count, every point on a mesh triangle, normals unit length, occlusion in [0,1].
-- Words: a point is lit only if it faces the viewpoint and projects inside the word mask; each word lights enough points to read (≥ 300).
+- Words: a point is lit only if it faces the viewpoint and projects inside the word mask; MAVERN lights enough points to read (≥ 300).
+- City: seen from above, the occupied blocks equal the word bitmap; every element gets exactly one city target; towers stand only on lit blocks; traffic only on streets.
 - Content: unique slugs, valid mediums, unconfirmed links filtered out, every work has a summary under 160 characters.
 - Colour tokens: each allowed pairing ≥ 4.5:1 (body) or ≥ 3:1 (large).
 - Sitemap contains every route.
