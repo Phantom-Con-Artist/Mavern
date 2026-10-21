@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const MODEL_DIR = "assets/models/marble-bust-01";
 const OUT = "public/hero/bust.bin";
-export const POINT_COUNT = 14000;
+export const POINT_COUNT = 30000;
 const SEED = 1859;
 
 /** Positions, normals, UVs and indices of the first mesh primitive, with its node translation applied. */
