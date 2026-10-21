@@ -1,57 +1,58 @@
 import { describe, expect, it } from "vitest";
-import { STAGE_COUNT, advance, phaseMs, pose, type LoopState } from "@/components/hero/loop";
+import { SEGMENTS, advance, pose, type LoopState } from "@/components/hero/loop";
 
-const start: LoopState = { stage: 0, phase: "approach", t: 0 };
-
-function run(s: LoopState, ms: number): LoopState {
-  for (let left = ms; left > 0; left -= 50) s = advance(s, Math.min(50, left));
-  return s;
-}
-
-function cycleMs() {
-  let s = start;
-  let total = 0;
-  do {
-    total += phaseMs(s);
-    s = advance({ ...s, t: phaseMs(s) - 1 }, 1);
-  } while (!(s.stage === 0 && s.phase === "approach"));
-  return total;
-}
+const start: LoopState = { segment: 0, t: 0 };
+const at = (segment: number, share: number): LoopState => ({ segment, t: SEGMENTS[segment].ms * share });
+const index = (name: string) => SEGMENTS.findIndex((s) => s.name === name);
 
 describe("hero loop", () => {
-  it("has the diorama and one city per medium", () => {
-    expect(STAGE_COUNT).toBe(5);
+  it("approaches the diorama, locks MAVERN, then zooms into the statue's eye", () => {
+    expect(SEGMENTS.slice(0, 3).map((s) => s.name)).toEqual(["approach", "mavern", "eye"]);
+    expect(SEGMENTS.slice(0, 3).every((s) => s.scene === "diorama")).toBe(true);
+    expect(SEGMENTS.slice(3).every((s) => s.scene === "city")).toBe(true);
   });
 
-  it("approaches the diorama, holds, then morphs to the first city", () => {
-    let s = run(start, phaseMs(start));
-    expect(s).toMatchObject({ stage: 0, phase: "hold" });
-    s = run(s, phaseMs(s));
-    expect(s).toMatchObject({ stage: 0, phase: "move" });
-    s = run(s, phaseMs(s));
-    expect(s).toMatchObject({ stage: 1, phase: "hold" });
+  it("holds once on each medium's viewpoint, in order", () => {
+    const holds = SEGMENTS.filter((s) => s.name.startsWith("hold-"));
+    expect(holds.map((s) => s.medium)).toEqual([0, 1, 2, 3]);
+    for (const h of holds) expect(h.from).toBe(h.to);
   });
 
-  it("goes through every city and back to the diorama", () => {
-    expect(run(start, cycleMs())).toMatchObject({ stage: 0, phase: "approach" });
+  it("chains camera poses: each segment starts where the last one ended", () => {
+    SEGMENTS.forEach((s, i) => {
+      const prev = SEGMENTS[(i - 1 + SEGMENTS.length) % SEGMENTS.length];
+      if (prev.scene === s.scene) expect(s.from, s.name).toBe(prev.to);
+    });
+  });
+
+  it("sees the whole city from the sky, then dives to the first word", () => {
+    expect(SEGMENTS.slice(3, 5).map((s) => [s.name, s.from, s.to])).toEqual([
+      ["glance", "sky", "sky"],
+      ["dive", "sky", "word-0"],
+    ]);
+  });
+
+  it("washes across each change of scene: ink out of the eye, sun back to the diorama", () => {
+    expect(pose(at(index("eye"), 1))).toMatchObject({ wash: 1, washColour: "ink" });
+    expect(pose(at(index("glance"), 0))).toMatchObject({ wash: 1, washColour: "ink" });
+    expect(pose(at(index("rise"), 1))).toMatchObject({ wash: 1, washColour: "sun" });
+    expect(pose(at(0, 0))).toMatchObject({ wash: 1, washColour: "sun" });
+    for (const name of ["mavern", "hold-0", "hold-3"]) expect(pose(at(index(name), 0.5)).wash).toBe(0);
+  });
+
+  it("goes round and back to the start", () => {
+    let s = start;
+    const total = SEGMENTS.reduce((n, seg) => n + seg.ms, 0);
+    for (let left = total; left > 0; left -= 50) s = advance(s, Math.min(50, left));
+    expect(s.segment).toBe(0);
   });
 
   it("never jumps more than 100 ms in one step", () => {
-    expect(advance(start, 5000)).toEqual({ stage: 0, phase: "approach", t: 100 });
+    expect(advance(start, 5000)).toEqual({ segment: 0, t: 100 });
   });
 
-  it("holds still on the stage it is showing", () => {
-    expect(pose({ stage: 2, phase: "hold", t: 300 })).toMatchObject({ from: 2, to: 2, t: 0 });
-    expect(pose({ stage: 0, phase: "hold", t: 300 })).toMatchObject({ from: 0, to: 0, t: 0, approach: 1 });
-  });
-
-  it("moves to the next stage, and from the last city back to the diorama", () => {
-    expect(pose({ stage: 1, phase: "move", t: 0 })).toMatchObject({ from: 1, to: 2, t: 0 });
-    expect(pose({ stage: 4, phase: "move", t: 1e9 })).toMatchObject({ from: 4, to: 0, t: 1 });
-  });
-
-  it("approaches the MAVERN viewpoint from 0 to 1", () => {
-    expect(pose({ stage: 0, phase: "approach", t: 0 }).approach).toBe(0);
-    expect(pose({ stage: 0, phase: "approach", t: 1e9 }).approach).toBeCloseTo(1);
+  it("eases camera travel from 0 to 1", () => {
+    expect(pose(at(index("move-1"), 0)).t).toBe(0);
+    expect(pose(at(index("move-1"), 1)).t).toBeCloseTo(1);
   });
 });

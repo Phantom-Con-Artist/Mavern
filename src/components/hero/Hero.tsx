@@ -7,8 +7,7 @@ import { mediums } from "@/content/mediums";
 import { usePageActive } from "@/hooks/usePageActive";
 import { HeroFallback } from "./HeroFallback";
 
-const DioramaScene = dynamic(() => import("./DioramaScene"), { ssr: false });
-const words = mediums.map((m) => m.word);
+const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 
 function canAnimate(): boolean {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
@@ -21,6 +20,7 @@ function canAnimate(): boolean {
 
 export function Hero() {
   const stage = useRef<HTMLDivElement>(null);
+  const wash = useRef<HTMLDivElement>(null);
   const active = usePageActive(stage);
   const [live, setLive] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -50,7 +50,10 @@ export function Hero() {
         aria-hidden="true"
       >
         {showScene ? (
-          <DioramaScene words={words} running={active && !paused} onStage={(stage) => setWord(Math.max(0, stage - 1))} onFail={() => setFailed(true)} />
+          <>
+            <HeroScene running={active && !paused} wash={wash} onMedium={setWord} onFail={() => setFailed(true)} />
+            <div ref={wash} className="pointer-events-none absolute inset-0 bg-sun opacity-0" />
+          </>
         ) : (
           <HeroFallback className="absolute inset-0 m-auto h-full w-full" />
         )}

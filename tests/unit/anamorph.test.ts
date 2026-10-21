@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { describe, expect, it } from "vitest";
-import { DEPTH_RANGE, fragmentCorners, referenceCorners, sliceWord } from "@/components/hero/anamorph";
+import { DEPTH_RANGE, fragmentCorners, referenceCorners, sliceWord, sliceWordOnto } from "@/components/hero/anamorph";
 import type { Viewpoint } from "@/components/hero/views";
 
 const view: Viewpoint = { eye: [2, 1.2, 4], target: [0, 0.6, 0], fov: 32 };
@@ -58,5 +58,44 @@ describe("sliced word", () => {
 
   it("is the same for the same seed", () => {
     expect(sliceWord(view, layout, { cols: 6, rows: 2 }, 11)).toEqual(fragments);
+  });
+});
+
+describe("word hung on a city", () => {
+  // A wall facing the viewpoint, 9 units along its line of sight: lines that reach it stop there.
+  const wallDistance = 9;
+  const nearestHit = (dir: THREE.Vector3) => {
+    const eye = new THREE.Vector3(...view.eye);
+    const forward = new THREE.Vector3(...view.target).sub(eye).normalize();
+    const along = dir.dot(forward);
+    return along > 0 ? wallDistance / along : null;
+  };
+  const hung = sliceWordOnto(view, layout, { cols: 6, rows: 2 }, 11, nearestHit, { gap: 0.3, hang: [0.5, 1], sky: [1.2, 2] });
+
+  it("still reads flat and whole from its viewpoint", () => {
+    const c = camera(view);
+    for (const f of hung) {
+      const actual = fragmentCorners(f).map((p) => project(p, c));
+      const expected = referenceCorners(view, layout, f.uv).map((p) => project(p, c));
+      actual.forEach((p, k) => {
+        expect(p.x).toBeCloseTo(expected[k].x, 5);
+        expect(p.y).toBeCloseTo(expected[k].y, 5);
+      });
+    }
+  });
+
+  it("never sinks into the wall", () => {
+    const eye = new THREE.Vector3(...view.eye);
+    const forward = new THREE.Vector3(...view.target).sub(eye).normalize();
+    for (const f of hung)
+      for (const corner of fragmentCorners(f)) expect(corner.clone().sub(eye).dot(forward)).toBeLessThanOrEqual(wallDistance - 0.29);
+  });
+
+  it("floats pieces that meet nothing at a sky depth", () => {
+    const open = sliceWordOnto(view, layout, { cols: 3, rows: 1 }, 2, () => null, { gap: 0.3, hang: [0.5, 1], sky: [1.2, 2] });
+    for (const f of open) {
+      expect(f.depth).toBeGreaterThanOrEqual(1.2);
+      expect(f.depth).toBeLessThanOrEqual(2);
+    }
   });
 });

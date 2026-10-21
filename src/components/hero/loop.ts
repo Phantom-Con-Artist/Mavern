@@ -1,35 +1,57 @@
 /*
-  The hero's cycle as pure functions, testable without a renderer. Stage 0 is the diorama; stages 1–4 are
-  the cities, one per medium. The camera approaches the diorama until MAVERN locks in, holds, and then
-  each move morphs the blocks to the next stage while the camera travels with them.
+  The hero's cycle as pure functions, testable without a renderer. The scenes never move; the camera does:
+  it approaches the clay diorama until MAVERN locks in, zooms into the statue's eye until the pupil fills
+  the frame, opens high over the night city, dives to street level and glides between four viewpoints
+  where each medium's neon pieces lock into its word. Then it climbs out and washes back to the diorama.
 */
-export const STAGE_COUNT = 5;
-export type LoopPhase = "approach" | "hold" | "move";
-export type LoopState = { stage: number; phase: LoopPhase; t: number };
+export type SceneName = "diorama" | "city";
+/** Named camera poses; the scenes define where each one is. */
+export type PoseName = "approach" | "mavern" | "eye" | "sky" | "aerial" | `word-${number}`;
 
-export function phaseMs(s: LoopState): number {
-  if (s.phase === "approach") return 2400;
-  if (s.phase === "hold") return s.stage === 0 ? 1800 : 2600;
-  return 2600;
-}
+export type Segment = {
+  name: string;
+  scene: SceneName;
+  ms: number;
+  from: PoseName;
+  to: PoseName;
+  /** The medium this segment shows or heads towards. */
+  medium: number;
+  /** How the wash that hides a change of scene fades: in at the end, out at the start, or not at all. */
+  wash?: "in" | "out";
+  /** Its colour: ink coming out of the statue's eye, sun on the way back to the diorama. */
+  washColour?: "ink" | "sun";
+};
+
+const MEDIUMS = 4;
+
+export const SEGMENTS: Segment[] = [
+  { name: "approach", scene: "diorama", ms: 2400, from: "approach", to: "mavern", medium: 0, wash: "out", washColour: "sun" },
+  { name: "mavern", scene: "diorama", ms: 1800, from: "mavern", to: "mavern", medium: 0 },
+  { name: "eye", scene: "diorama", ms: 2000, from: "mavern", to: "eye", medium: 0, wash: "in", washColour: "ink" },
+  { name: "glance", scene: "city", ms: 1800, from: "sky", to: "sky", medium: 0, wash: "out", washColour: "ink" },
+  { name: "dive", scene: "city", ms: 3000, from: "sky", to: "word-0", medium: 0 },
+  ...Array.from({ length: MEDIUMS }, (_, k) => [
+    ...(k > 0 ? [{ name: `move-${k}`, scene: "city" as const, ms: 2200, from: `word-${k - 1}` as PoseName, to: `word-${k}` as PoseName, medium: k }] : []),
+    { name: `hold-${k}`, scene: "city" as const, ms: 2000, from: `word-${k}` as PoseName, to: `word-${k}` as PoseName, medium: k },
+  ]).flat(),
+  { name: "rise", scene: "city", ms: 2200, from: `word-${MEDIUMS - 1}`, to: "aerial", medium: MEDIUMS - 1, wash: "in", washColour: "sun" },
+];
+
+export type LoopState = { segment: number; t: number };
 
 /** Longest step taken at once, so a tab that was hidden resumes where it was instead of skipping ahead. */
 const MAX_STEP_MS = 100;
-
-function next(s: LoopState): LoopState {
-  if (s.phase === "approach") return { ...s, phase: "hold", t: 0 };
-  if (s.phase === "hold") return { ...s, phase: "move", t: 0 };
-  const stage = (s.stage + 1) % STAGE_COUNT;
-  return { stage, phase: stage === 0 ? "approach" : "hold", t: 0 };
-}
+/** Share of a segment the wash takes to fade in or out. */
+const WASH_SHARE = 0.45;
 
 export function advance(s: LoopState, dtMs: number): LoopState {
-  let state = { ...s, t: s.t + Math.min(Math.max(dtMs, 0), MAX_STEP_MS) };
-  while (state.t >= phaseMs(state)) {
-    const left = state.t - phaseMs(state);
-    state = { ...next(state), t: left };
+  let { segment, t } = s;
+  t += Math.min(Math.max(dtMs, 0), MAX_STEP_MS);
+  while (t >= SEGMENTS[segment].ms) {
+    t -= SEGMENTS[segment].ms;
+    segment = (segment + 1) % SEGMENTS.length;
   }
-  return state;
+  return { segment, t };
 }
 
 /** power4.inOut, matching --ease-in-out. */
@@ -37,18 +59,11 @@ export function easeInOut(p: number): number {
   return p < 0.5 ? 8 * p ** 4 : 1 - (-2 * p + 2) ** 4 / 2;
 }
 
-export type Pose = {
-  /** Stages being shown: from → to at t (0 to 1). Equal while holding. */
-  from: number;
-  to: number;
-  t: number;
-  /** The camera's approach to the MAVERN viewpoint, 0 to 1. */
-  approach: number;
-};
+export type Pose = { scene: SceneName; from: PoseName; to: PoseName; t: number; wash: number; washColour: "ink" | "sun"; medium: number };
 
 export function pose(s: LoopState): Pose {
-  const p = Math.min(s.t / phaseMs(s), 1);
-  if (s.phase === "approach") return { from: 0, to: 0, t: 0, approach: easeInOut(p) };
-  if (s.phase === "hold") return { from: s.stage, to: s.stage, t: 0, approach: 1 };
-  return { from: s.stage, to: (s.stage + 1) % STAGE_COUNT, t: easeInOut(p), approach: 1 };
+  const seg = SEGMENTS[s.segment];
+  const p = Math.min(s.t / seg.ms, 1);
+  const wash = seg.wash === "in" ? Math.max(0, 1 + (p - 1) / WASH_SHARE) : seg.wash === "out" ? Math.max(0, 1 - p / WASH_SHARE) : 0;
+  return { scene: seg.scene, from: seg.from, to: seg.to, t: seg.from === seg.to ? 0 : easeInOut(p), wash, washColour: seg.washColour ?? "sun", medium: seg.medium };
 }
